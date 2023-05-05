@@ -1,0 +1,5 @@
+<mat-selection-list #columnsList>
+  <mat-list-option [value]="column" *ngFor="let column of columns">
+    {{ columnDefs.get(column) }}
+  </mat-list-option>
+</mat-selection-list>

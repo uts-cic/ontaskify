@@ -1,0 +1,38 @@
+<mat-card>
+  <mat-card-content>
+    <mat-form-field appearance="outline">
+      <mat-label>Select course:</mat-label>
+      <mat-select (selectionChange)="course = $event.value">
+        <mat-option *ngFor="let course of courses" [value]="course.id">
+          {{ course.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Select endpoint:</mat-label>
+      <mat-select (selectionChange)="selectPath($event.value)">
+        <mat-option *ngFor="let path of paths" [value]="path">
+          {{ path }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" *ngFor="let param of params">
+      <mat-label>{{ param }}</mat-label>
+      <input
+        matInput
+        (input)="updateParamVal(param, $event.target)"
+        [value]="paramVals.get(param) || ''"
+      />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="go()">Go</button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="result">
+  <mat-card-header>
+    <mat-card-title>{{ path }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <pre>{{ result | json }}</pre>
+  </mat-card-content>
+</mat-card>

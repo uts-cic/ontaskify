@@ -1,0 +1,42 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Connect your Canvas account</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="content">
+    <mat-form-field appearance="outline" class="input">
+      <mat-label>Insert your Canvas token</mat-label>
+      <input matInput type="password" [(ngModel)]="token" #input />
+      <button *ngIf="!token" mat-icon-button matSuffix (click)="paste()">
+        <mat-icon color="primary">content_paste_go</mat-icon>
+      </button>
+      <mat-icon *ngIf="isValid" matSuffix color="accent">check_circle</mat-icon>
+      <mat-icon *ngIf="token && !isValid" matSuffix color="warn"
+        >error</mat-icon
+      >
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!isValid"
+      (click)="startSession()"
+    >
+      Start session
+    </button>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>How to get your token</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <ol>
+      <li>Login to Canvas....</li>
+      <li>Go to Account -> Settings -> Approved Integrations</li>
+      <li>Click "New Access Token" button</li>
+      <li>Enter purpose (i.e. "OnTask converter") and expiry date</li>
+      <li>
+        Click "Generate Token" and copy the generated token to a safe place
+      </li>
+    </ol>
+  </mat-card-content>
+</mat-card>

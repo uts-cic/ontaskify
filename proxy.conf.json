@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://canvas.uts.edu.au",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

@@ -1,0 +1,23 @@
+<!-- <mat-toolbar color="primary">
+  <a mat-icon-button [routerLink]="['/']">
+    <mat-icon>home</mat-icon>
+  </a>
+  <mat-divider [vertical]="true"></mat-divider>
+  <div class="mat-h1">OnTaskify | <small>Canvas-to-OnTask</small></div>
+  <ng-container *ngIf="token$ | async as token">
+    <mat-divider [vertical]="true"></mat-divider>
+    <div>{{ token.substring(0, 6) + "*".repeat(3) }}</div>
+    <button mat-stroked-button color="warn">End session</button>
+  </ng-container>
+</mat-toolbar> -->
+<mat-toolbar *ngIf="data$ | async as data">
+  Canvas connection: {{ data.name }} ({{
+    (token$ | async)!.substring(0, 6) + "*".repeat(3)
+  }})
+  <span class="spacer"></span>
+  <button mat-flat-button color="warn">End session</button>
+</mat-toolbar>
+<router-outlet *ngIf="token$ | async; else connect"></router-outlet>
+<ng-template #connect>
+  <app-canvas-connect></app-canvas-connect>
+</ng-template>

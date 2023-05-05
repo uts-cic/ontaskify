@@ -1,0 +1,18 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Select a course</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="content">
+    <mat-nav-list>
+      <a
+        mat-list-item
+        [routerLink]="[course.id]"
+        *ngFor="let course of courses$ | async"
+      >
+        {{ course.name }}
+        <span matListItemMeta>{{ course.workflow_state }}</span>
+        <!-- <pre>{{ course | json }}</pre> -->
+      </a>
+    </mat-nav-list>
+  </mat-card-content>
+</mat-card>

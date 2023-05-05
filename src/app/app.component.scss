@@ -1,0 +1,24 @@
+.mat-toolbar {
+  padding: 0 3rem;
+}
+
+.ontaskify-logo {
+  font-size: 1.25rem;
+  margin-left: -0.5rem;
+}
+
+.toolbar-divider {
+  margin: 0 1rem;
+  border-right: 1px solid #ccc;
+  height: 1.5rem;
+  display: inline-block;
+}
+
+.nav-item {
+  font-size: 1rem;
+  margin-left: 1rem;
+
+  &.active {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}

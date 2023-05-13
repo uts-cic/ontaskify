@@ -176,3 +176,38 @@ interface CanvasAssignment {
   url: string;
   quiz_id: number | null;
 }
+
+interface CanvasSubmission {
+  assignment_id?: number;
+  attempt?: number;
+  body?: string;
+  grade?: string;
+  grade_matches_current_submission?: boolean;
+  html_url?: string;
+  preview_url?: string;
+  score?: number;
+  submission_type?:
+    | 'online_text_entry'
+    | 'online_url'
+    | 'online_upload'
+    | 'media_recording'
+    | 'student_annotation';
+  submitted_at?: string;
+  url?: string;
+  user_id?: number;
+  grader_id?: number;
+  graded_at?: string;
+  late?: boolean;
+  assignment_visible?: boolean;
+  excused?: boolean;
+  missing?: boolean;
+  late_policy_status?: 'late' | 'missing' | 'extended' | 'none' | null;
+  points_deducted?: number;
+  seconds_late?: number;
+  workflow_state?: 'graded' | 'submitted' | 'unsubmitted' | 'pending_review';
+  extra_attempts?: number;
+  anonymous_id?: string;
+  posted_at?: string;
+  read_status?: 'read' | 'unread';
+  redo_request?: boolean;
+}

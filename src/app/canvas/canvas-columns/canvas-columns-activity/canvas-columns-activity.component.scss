@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 20rem;
+}
+
+.upload-field {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 56px;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  border-radius: 4px;
+  margin-bottom: 22px;
+}

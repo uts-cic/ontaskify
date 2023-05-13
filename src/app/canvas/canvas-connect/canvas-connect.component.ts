@@ -12,8 +12,9 @@ import { TokenService } from '../services/token.service';
   styleUrls: ['./canvas-connect.component.scss'],
 })
 export class CanvasConnectComponent {
-  private tokenService = inject(TokenService);
-  private _token = this.tokenService.getToken() || '';
+  private tokenSignal = inject(TokenService).token;
+
+  private _token = this.tokenSignal() || '';
   get token() {
     return this._token;
   }
@@ -31,6 +32,6 @@ export class CanvasConnectComponent {
   }
 
   startSession() {
-    this.isValid && this.tokenService.setToken(this.token);
+    this.isValid && this.tokenSignal.set(this.token);
   }
 }

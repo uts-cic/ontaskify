@@ -7,7 +7,7 @@
     <p>{{ course.name }}</p>
     <p>Students: {{ students.length }}</p>
 
-    <ng-container *ngIf="columnDefs$ | async as columnDefs">
+    <ng-container *ngIf="columns$ | async as columns">
       <h4>Columns</h4>
       <mat-chip-listbox
         [multiple]="true"
@@ -18,9 +18,9 @@
           color="accent"
           [selected]="displayColumns.includes(column)"
           [value]="column"
-          *ngFor="let column of columns$ | async"
+          *ngFor="let column of columns"
         >
-          {{ columnDefs.get(column) }}
+          {{ column }}
         </mat-chip-option>
       </mat-chip-listbox>
     </ng-container>
@@ -29,17 +29,15 @@
       Add columns
     </button>
     <mat-menu #addColumn="matMenu" class="menu">
-      <button mat-menu-item (click)="addColumns('summary')">
-        Summary (Page views/participations)
-      </button>
+      <button mat-menu-item (click)="addColumns('summary')">Summary</button>
       <button mat-menu-item (click)="addColumns('assignments')">
         Assignments
       </button>
-      <button mat-menu-item value="activity">Activity</button>
+      <button mat-menu-item (click)="addColumns('activity')">Activity</button>
     </mat-menu>
 
     <h4>Export data</h4>
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Filename</mat-label>
       <input matInput [(ngModel)]="filename" />
     </mat-form-field>
@@ -50,7 +48,7 @@
   </mat-card-content>
 </mat-card>
 
-<mat-card *ngIf="columnDefs$ | async as columnDefs">
+<mat-card>
   <mat-card-header>
     <mat-card-title>{{ course.name }}</mat-card-title>
   </mat-card-header>
@@ -62,9 +60,9 @@
             mat-header-cell
             *matHeaderCellDef
             mat-sort-header
-            [sortActionDescription]="'Sort by ' + columnDefs.get(column)"
+            [sortActionDescription]="'Sort by ' + column"
           >
-            {{ columnDefs.get(column) }}
+            {{ column }}
           </th>
           <td mat-cell *matCellDef="let student">{{ student[column] }}</td>
         </ng-container>

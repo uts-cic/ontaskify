@@ -1,8 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Routes } from '@angular/router';
 import { map } from 'rxjs';
-import { CanvasColumnsAssignmentsComponent } from './canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
-import { CanvasColumnsSummaryComponent } from './canvas-columns/canvas-columns-summary/canvas-columns-summary.component';
 import { CanvasCourseComponent } from './canvas-course/canvas-course.component';
 import { CanvasCoursesComponent } from './canvas-courses/canvas-courses.component';
 import { CanvasPageComponent } from './canvas-page/canvas-page.component';
@@ -31,15 +29,15 @@ export const studentsResolver: ResolveFn<OntaskStudent[]> = (
 
   const mapToOntask = (student: Student): OntaskStudent => {
     const id = student.id;
-    const sid = student['sis_user_id'];
+    const student_id = student['sis_user_id'];
     const splitName = student['sortable_name'].split(', ');
-    const lastName = splitName[0];
-    const firstName = splitName[1];
+    const last_name = splitName[0];
+    const first_name = splitName[1];
     const emailCandidate = student['email'] || student['login_id'];
     const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailCandidate)
       ? emailCandidate
       : null;
-    return { id, sid, firstName, lastName, email };
+    return { id, student_id, first_name, last_name, email };
   };
 
   return canvasService.getStudents(courseId).pipe(
@@ -53,29 +51,12 @@ export default [
     path: '',
     component: CanvasPageComponent,
     title: 'OnTaskify | Canvas-to-OnTask data integration',
-    providers: [
-      {
-        provide: 'ONTASK_MERGERS',
-        multi: true,
-        useValue: [
-          {
-            type: 'summary',
-            component: CanvasColumnsSummaryComponent,
-            title: 'Summary (Page views/participations)',
-          },
-          {
-            type: 'assignments',
-            component: CanvasColumnsAssignmentsComponent,
-            title: 'Assignments',
-          },
-        ],
-      },
-    ],
     children: [
       {
         path: '',
         pathMatch: 'full',
         component: CanvasCoursesComponent,
+        resolve: { courses: coursesResolver },
       },
       {
         path: 'test',

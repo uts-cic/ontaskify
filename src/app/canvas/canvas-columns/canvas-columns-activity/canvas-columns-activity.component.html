@@ -1,0 +1,42 @@
+<div class="upload-field">
+  <input type="file" (change)="handleFileUpload($event)" />
+</div>
+
+<mat-form-field appearance="outline" *ngIf="sectionsLookup() as sectionsLookup">
+  <mat-label>Select section</mat-label>
+  <mat-select (selectionChange)="section.set($event.value)" [value]="section()">
+    <mat-option *ngFor="let sectionId of sections()" [value]="sectionId">
+      {{ sectionsLookup.get(sectionId) }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field appearance="outline" *ngIf="contentTypes() as contentTypes">
+  <mat-label>Select content type</mat-label>
+  <mat-select
+    (selectionChange)="contentType.set($event.value)"
+    [value]="contentType()"
+  >
+    <mat-option *ngFor="let type of contentTypes" [value]="type">
+      {{ type }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field appearance="outline" *ngIf="contentNames() as contentNames">
+  <mat-label>Select content name</mat-label>
+  <mat-select
+    (selectionChange)="contentName.set($event.value)"
+    [value]="contentName()"
+  >
+    <mat-option *ngFor="let name of contentNames" [value]="name">
+      {{ name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<app-select-columns
+  *ngIf="rows() as rows"
+  [rows]="rows"
+  (selectionChange)="updateColumns($event)"
+></app-select-columns>

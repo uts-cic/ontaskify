@@ -1,9 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { combineLatest, map } from 'rxjs';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { combineLatest, map, take } from 'rxjs';
 import { MaterialModule } from '../material.module';
-import { OntaskMergeService } from './ontask-merge.service';
+import { DoColumnMerge, OntaskMergeService } from '../ontask-merge.service';
 
 @Component({
   selector: 'app-ontask-merge',
@@ -12,10 +20,16 @@ import { OntaskMergeService } from './ontask-merge.service';
   templateUrl: './ontask-merge.component.html',
   styleUrls: ['./ontask-merge.component.scss'],
 })
-export class OntaskMergeComponent {
+export class OntaskMergeComponent implements AfterViewInit {
+  private cdRef = inject(ChangeDetectorRef);
   private ontaskMergeService = inject(OntaskMergeService);
+  private dialogRef = inject(MatDialogRef);
+  private instance?: DoColumnMerge;
 
-  data = inject(MAT_DIALOG_DATA) as { title: string };
+  data = inject(MAT_DIALOG_DATA) as {
+    title: string;
+    component: Type<DoColumnMerge>;
+  };
 
   loading$ = this.ontaskMergeService.getLoadingAsObservable();
   ready$ = this.ontaskMergeService.getReadyAsObservable();
@@ -26,7 +40,16 @@ export class OntaskMergeComponent {
   @ViewChild('componentContainer', { read: ViewContainerRef, static: true })
   componentContainer!: ViewContainerRef;
 
+  ngAfterViewInit() {
+    const { component } = this.data;
+    this.instance = this.componentContainer.createComponent(component).instance;
+    this.cdRef.detectChanges();
+  }
+
   apply() {
-    this.ontaskMergeService.merge();
+    this.ontaskMergeService.setLoading(true);
+    this.instance!.doColumnMerge()
+      .pipe(take(1))
+      .subscribe((columns) => this.dialogRef.close(columns));
   }
 }

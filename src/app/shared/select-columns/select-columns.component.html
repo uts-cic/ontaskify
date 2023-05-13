@@ -1,0 +1,9 @@
+<mat-selection-list
+  (selectionChange)="updateSelection($event)"
+  *ngIf="columns.length > 0"
+>
+  <mat-list-option [value]="column" *ngFor="let column of columns">
+    <span matListItemTitle>{{ column }}</span>
+    {{ values.get(column)! | preview }}
+  </mat-list-option>
+</mat-selection-list>

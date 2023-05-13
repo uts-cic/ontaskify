@@ -1,78 +1,53 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
-import { MatSelectionList } from '@angular/material/list';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs';
-import { MaterialModule } from 'src/app/shared/material.module';
+import { flatten } from 'flat';
+import { omit } from 'lodash';
+import { map, of, tap } from 'rxjs';
 import {
   DoColumnMerge,
   OntaskMergeService,
-} from 'src/app/shared/ontask-merge/ontask-merge.service';
-import { OntaskService } from 'src/app/shared/ontask.service';
+} from 'src/app/shared/ontask-merge.service';
+import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 import { CanvasService } from '../../services/canvas.service';
 
 @Component({
   selector: 'app-canvas-columns-summary',
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, SelectColumnsComponent],
   templateUrl: './canvas-columns-summary.component.html',
   styleUrls: ['./canvas-columns-summary.component.scss'],
 })
-export class CanvasColumnsSummaryComponent
-  implements AfterViewInit, DoColumnMerge
-{
+export class CanvasColumnsSummaryComponent implements DoColumnMerge {
   private ontaskMergeService = inject(OntaskMergeService);
   private canvasService = inject(CanvasService);
-  private ontaskService = inject(OntaskService);
+  private route = inject(ActivatedRoute);
 
-  snapshot = inject(ActivatedRoute).snapshot;
-  course = inject(ActivatedRoute).snapshot.data['course'] as Course;
+  private course =
+    this.route.snapshot.firstChild?.firstChild?.firstChild?.data['course'];
 
-  @ViewChild('columnsList', { static: false }) columnsList!: MatSelectionList;
+  rows$ = this.canvasService
+    .getStudentSummaries(this.course.id)
+    .pipe(map((summaries) => this.getDataMap(summaries)))
+    .pipe(tap((rows) => (this._rows = rows)));
 
-  columnDefs = new Map<string, string>([
-    ['pageViews', 'Page views'],
-    ['pageViewsLevel', 'Page views level'],
-    ['participations', 'Participations'],
-    ['participationsLevel', 'Participations level'],
-  ]);
-  columns = Array.from(this.columnDefs.keys());
-
-  ngAfterViewInit() {
-    console.log(this.snapshot);
-    this.columnsList.selectedOptions.changed.subscribe((selected) =>
-      this.ontaskMergeService.setReady(!selected.source.isEmpty())
+  private getDataMap(data: StudentSummary[]): Map<number, OntaskRowData> {
+    return new Map(
+      data.map((summary) => [summary.id, omit(flatten(summary), 'id')])
     );
+  }
+
+  private _rows!: Map<number, OntaskRowData>;
+  private _columns: string[] = [];
+  updateColumns(columns: string[]) {
+    this._columns = columns;
+    this.ontaskMergeService.setReady(columns.length > 0);
   }
 
   doColumnMerge() {
-    return this.canvasService
-      .getStudentSummaries(
-        this.snapshot.firstChild?.firstChild?.firstChild?.data['course'].id
-      )
-      .pipe(
-        map((summaries) => {
-          this.ontaskService.addColumnDefs(this.columnDefs);
-          const summariesMap = this.getSummariesMap(summaries);
-          this.ontaskService.mergeData(summariesMap);
-          return this.columnsList.selectedOptions.selected.map(
-            ({ value }) => value
-          );
-        })
-      );
-  }
-
-  private getSummariesMap(summaries: StudentSummary[]) {
-    return new Map<number, { [prop: string]: number }>(
-      summaries.map((summary) => [
-        summary.id,
-        {
-          pageViews: summary.page_views,
-          pageViewsLevel: summary.page_views_level,
-          participations: summary.participations,
-          participationsLevel: summary.participations_level,
-        },
-      ])
-    );
+    return of({
+      rows: this._rows,
+      columns: this._columns,
+    });
   }
 }

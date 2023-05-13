@@ -12,9 +12,12 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { OntaskMergeService } from 'src/app/shared/ontask-merge/ontask-merge.service';
+import { OntaskMergeService } from 'src/app/shared/ontask-merge.service';
 import { MaterialModule } from '../../shared/material.module';
 import { OntaskService } from '../../shared/ontask.service';
+import { CanvasColumnsActivityComponent } from '../canvas-columns/canvas-columns-activity/canvas-columns-activity.component';
+import { CanvasColumnsAssignmentsComponent } from '../canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
+import { CanvasColumnsSummaryComponent } from '../canvas-columns/canvas-columns-summary/canvas-columns-summary.component';
 
 @Component({
   selector: 'app-canvas-course',
@@ -32,10 +35,11 @@ export class CanvasCourseComponent implements OnInit, OnDestroy, AfterViewInit {
     'students'
   ] as OntaskStudent[];
 
-  columnDefs$ = this.ontaskService.getColumnDefsAsObservable();
   columns$ = this.ontaskService.getColumnsAsObservable();
 
-  displayColumns: string[] = this.ontaskService.getColumns();
+  displayColumns: string[] = this.ontaskService
+    .getColumns()
+    .filter((col) => col !== 'id');
   filename: string = this.course.name + '.csv';
 
   dataSource = new MatTableDataSource<OntaskStudent>();
@@ -65,10 +69,29 @@ export class CanvasCourseComponent implements OnInit, OnDestroy, AfterViewInit {
     this.displayColumns = columns;
   }
 
-  addColumns(type: 'summary' | 'assignments') {
+  addColumns(type: 'summary' | 'assignments' | 'activity') {
+    const mergers = {
+      summary: {
+        component: CanvasColumnsSummaryComponent,
+        title: 'Summary',
+      },
+      assignments: {
+        component: CanvasColumnsAssignmentsComponent,
+        title: 'Assignments',
+      },
+      activity: {
+        component: CanvasColumnsActivityComponent,
+        title: 'Activity',
+      },
+    };
+
+    const { title, component } = mergers[type];
+
     this.ontaskMergeService
-      .addColumns(type, this.displayColumns)
-      .subscribe((columns) => (this.displayColumns = columns));
+      .addColumns(title, component)
+      .subscribe(
+        (columns) => columns?.length && this.displayColumns.push(...columns)
+      );
   }
 
   download() {

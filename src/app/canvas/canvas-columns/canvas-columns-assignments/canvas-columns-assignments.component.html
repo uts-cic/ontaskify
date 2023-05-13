@@ -1,5 +1,17 @@
-<h2 mat-dialog-title>Select columns</h2>
+<mat-form-field
+  appearance="outline"
+  *ngIf="assignments$ | async as assignments"
+>
+  <mat-label>Select assignment</mat-label>
+  <mat-select (selectionChange)="setAssignment($event.value)">
+    <mat-option *ngFor="let assignment of assignments" [value]="assignment">
+      {{ assignment.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
 
-<mat-dialog-content>
-  <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
-</mat-dialog-content>
+<app-select-columns
+  *ngIf="rows$ | async as rows"
+  [rows]="rows"
+  (selectionChange)="updateColumns($event)"
+></app-select-columns>

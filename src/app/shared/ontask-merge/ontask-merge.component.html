@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
 
 <mat-dialog-content>
+  <div *ngIf="error?.() as error">{{ error }}</div>
   <ng-container #componentContainer></ng-container>
   <mat-progress-bar
     mode="indeterminate"

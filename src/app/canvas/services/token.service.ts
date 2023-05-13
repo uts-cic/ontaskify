@@ -20,20 +20,4 @@ export class TokenService {
       }
     });
   }
-
-  // setToken(token: string) {
-  //   this.token.set(token);
-  // }
-
-  // clearToken() {
-  //   this.token.set(null);
-  // }
-
-  // getTokenAsObservable() {
-  //   return toObservable(this.token);
-  // }
-
-  // getToken() {
-  //   return this.token();
-  // }
 }

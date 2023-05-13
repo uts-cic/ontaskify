@@ -4,12 +4,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { difference } from 'lodash';
 import { OntaskCsvComponent } from 'src/app/shared/ontask-csv/ontask-csv.component';
-import { OntaskMergeComponent } from 'src/app/shared/ontask-merge/ontask-merge.component';
+import {
+  OntaskMergeComponent,
+  OntaskMerger,
+} from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { MaterialModule } from '../../shared/material.module';
 import { OntaskService } from '../../shared/ontask.service';
-import { CanvasColumnsActivityComponent } from '../canvas-columns/canvas-columns-activity/canvas-columns-activity.component';
-import { CanvasColumnsAssignmentsComponent } from '../canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
-import { CanvasColumnsSummaryComponent } from '../canvas-columns/canvas-columns-summary/canvas-columns-summary.component';
+import MERGERS from '../mergers';
 import { CanvasCourseService } from '../services/canvas-course.service';
 
 @Component({
@@ -30,6 +31,8 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
   columns = this.ontaskService.columns;
   rows = this.ontaskService.rows;
   availableColumns = ['id'];
+
+  mergers = MERGERS;
 
   constructor() {
     effect(() =>
@@ -68,24 +71,9 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
     this.columns.set(columns);
   }
 
-  addColumns(type: 'summary' | 'assignments' | 'activity') {
-    const mergers = {
-      summary: {
-        component: CanvasColumnsSummaryComponent,
-        title: 'Summary',
-      },
-      assignments: {
-        component: CanvasColumnsAssignmentsComponent,
-        title: 'Assignments',
-      },
-      activity: {
-        component: CanvasColumnsActivityComponent,
-        title: 'Activity',
-      },
-    };
-
+  addColumns(merger: OntaskMerger) {
     this.dialog
-      .open(OntaskMergeComponent, { data: mergers[type] })
+      .open(OntaskMergeComponent, { data: merger })
       .afterClosed()
       .subscribe(
         (mergeData) => mergeData && this.ontaskService.mergeData(mergeData)

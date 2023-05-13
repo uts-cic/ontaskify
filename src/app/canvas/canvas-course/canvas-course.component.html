@@ -34,11 +34,13 @@
       Add columns
     </button>
     <mat-menu #addColumn="matMenu" class="menu">
-      <button mat-menu-item (click)="addColumns('summary')">Summary</button>
-      <button mat-menu-item (click)="addColumns('assignments')">
-        Assignments
+      <button
+        mat-menu-item
+        (click)="addColumns(merger)"
+        *ngFor="let merger of mergers"
+      >
+        {{ merger.title }}
       </button>
-      <button mat-menu-item (click)="addColumns('activity')">Activity</button>
     </mat-menu>
   </mat-card-content>
 </mat-card>

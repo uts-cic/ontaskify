@@ -20,6 +20,12 @@ export interface OntaskMerge {
   id: WritableSignal<string>;
   cols: WritableSignal<string[]>;
   rows: WritableSignal<OntaskMergeMap | null>;
+  error?: WritableSignal<string | null>;
+}
+
+export interface OntaskMerger {
+  title: string;
+  component: Type<OntaskMerge>;
 }
 
 @Component({
@@ -34,11 +40,9 @@ export class OntaskMergeComponent implements AfterViewInit {
   private dialogRef = inject(MatDialogRef);
 
   mergeData?: Signal<MergeData | null>;
+  error?: Signal<string | null>;
 
-  data = inject(MAT_DIALOG_DATA) as {
-    title: string;
-    component: Type<OntaskMerge>;
-  };
+  data = inject(MAT_DIALOG_DATA) as OntaskMerger;
 
   @ViewChild('componentContainer', { read: ViewContainerRef, static: true })
   componentContainer!: ViewContainerRef;
@@ -57,6 +61,7 @@ export class OntaskMergeComponent implements AfterViewInit {
       if (!(id && cols?.length > 0 && rows?.size)) return null;
       return { id, cols, rows };
     });
+    this.error = this.instance.error || undefined;
     this.cdRef.detectChanges();
   }
 

@@ -15,6 +15,16 @@ export class CanvasCourseService {
     return firstValueFrom(source$);
   }
 
+  async getBulkUserProgress(): Promise<UserProgress[]> {
+    const source$ = this.canvasService.getBulkUserProgress(this.courseId());
+    return firstValueFrom(source$);
+  }
+
+  async getEnrollments(): Promise<CanvasEnrollment[]> {
+    const source$ = this.canvasService.getEnrollments(this.courseId());
+    return firstValueFrom(source$);
+  }
+
   async getAssignments(): Promise<CanvasAssignment[]> {
     const source$ = this.canvasService.getAssignments(this.courseId());
     return firstValueFrom(source$);

@@ -4,18 +4,12 @@ import {
   WritableSignal,
   computed,
   effect,
-  inject,
   signal,
 } from '@angular/core';
 import { chain, filter, isEmpty } from 'lodash';
 import { ParseResult, parse } from 'papaparse';
-import { Observable, of } from 'rxjs';
 import { MaterialModule } from 'src/app/shared/material.module';
-import {
-  ColumnMerge,
-  DoColumnMerge,
-  OntaskMergeService,
-} from 'src/app/shared/ontask-merge.service';
+import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 
 type Activity = {
@@ -64,8 +58,11 @@ const transformHeader = (header: string): string => {
   templateUrl: './canvas-columns-activity.component.html',
   styleUrls: ['./canvas-columns-activity.component.scss'],
 })
-export class CanvasColumnsActivityComponent implements DoColumnMerge {
-  private ontaskMergeService = inject(OntaskMergeService);
+export class CanvasColumnsActivityComponent implements OntaskMerge {
+  loading: WritableSignal<boolean> = signal(false);
+  id: WritableSignal<string> = signal('id');
+  cols: WritableSignal<string[]> = signal([]);
+  rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
   activity: WritableSignal<Activity[] | null> = signal(null);
   section: WritableSignal<string | null> = signal(null);
@@ -112,30 +109,6 @@ export class CanvasColumnsActivityComponent implements DoColumnMerge {
       : null;
   });
 
-  rows = computed(() =>
-    this.contentNameFiltered().reduce(
-      (map, activity) => map.set(activity.id, this.getRow(activity)),
-      new Map<number, OntaskRowData>()
-    )
-  );
-
-  private getRow(activity: Activity): OntaskRowData {
-    const data = activity as OntaskRowData;
-    const row: OntaskRowData = {};
-    const name = this.contentName();
-    const props = [
-      'timesViewed',
-      'timesParticipated',
-      'startDate',
-      'firstViewed',
-      'lastViewed',
-    ];
-    for (const prop of props) {
-      row[`${name} - ${prop}`] = data[prop];
-    }
-    return row;
-  }
-
   fillInSection = effect(
     () => {
       const sections = this.sections();
@@ -166,7 +139,36 @@ export class CanvasColumnsActivityComponent implements DoColumnMerge {
     { allowSignalWrites: true }
   );
 
+  fillInRows = effect(
+    () => {
+      const transform = (activity: Activity): OntaskRow => {
+        const data = activity as OntaskRow;
+        const row: OntaskRow = {};
+        const name = this.contentName();
+        const props = [
+          'timesViewed',
+          'timesParticipated',
+          'startDate',
+          'firstViewed',
+          'lastViewed',
+        ];
+        for (const prop of props) {
+          row[`${name} - ${prop}`] = data[prop];
+        }
+        return row;
+      };
+
+      const rows = this.contentNameFiltered().reduce(
+        (map, activity) => map.set(activity.id, transform(activity)),
+        new Map<OntaskValue, OntaskRow>()
+      );
+      this.rows.set(rows);
+    },
+    { allowSignalWrites: true }
+  );
+
   handleFileUpload(event: Event) {
+    this.loading.set(true);
     const files: FileList | null = (event.target as HTMLInputElement).files;
     const file: File | null = files?.item(0) || null;
     if (file) {
@@ -176,23 +178,10 @@ export class CanvasColumnsActivityComponent implements DoColumnMerge {
         skipEmptyLines: true,
         transformHeader,
         complete: (result: ParseResult<Activity>) => {
-          console.log(result);
           this.activity.set(result.data);
+          this.loading.set(false);
         },
       });
     }
-  }
-
-  private _columns: string[] = [];
-  updateColumns(columns: string[]) {
-    this._columns = columns;
-    this.ontaskMergeService.setReady(columns.length > 0);
-  }
-
-  doColumnMerge(): Observable<ColumnMerge> {
-    return of({
-      rows: this.rows(),
-      columns: this._columns,
-    });
   }
 }

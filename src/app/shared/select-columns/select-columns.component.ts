@@ -13,10 +13,10 @@ import { PreviewPipe } from './preview.pipe';
   styleUrls: ['./select-columns.component.scss'],
 })
 export class SelectColumnsComponent {
-  private _rows!: Map<number, OntaskRowData>;
+  private _rows!: OntaskMergeMap;
   private _values!: Map<string, Array<string | number>>;
 
-  @Input({ required: true }) set rows(rows: Map<number, OntaskRowData> | null) {
+  @Input({ required: true }) set rows(rows: OntaskMergeMap | null) {
     this._rows = rows || new Map();
     this._values = new Map();
     this._rows.forEach((row) => {

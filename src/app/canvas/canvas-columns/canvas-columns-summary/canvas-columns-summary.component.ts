@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  WritableSignal,
+  inject,
+  signal,
+} from '@angular/core';
 import { flatten } from 'flat';
 import { omit } from 'lodash';
-import { map, of, tap } from 'rxjs';
-import {
-  DoColumnMerge,
-  OntaskMergeService,
-} from 'src/app/shared/ontask-merge.service';
+import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
-import { CanvasService } from '../../services/canvas.service';
+import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({
   selector: 'app-canvas-columns-summary',
@@ -18,36 +19,21 @@ import { CanvasService } from '../../services/canvas.service';
   templateUrl: './canvas-columns-summary.component.html',
   styleUrls: ['./canvas-columns-summary.component.scss'],
 })
-export class CanvasColumnsSummaryComponent implements DoColumnMerge {
-  private ontaskMergeService = inject(OntaskMergeService);
-  private canvasService = inject(CanvasService);
-  private route = inject(ActivatedRoute);
+export class CanvasColumnsSummaryComponent implements OnInit, OntaskMerge {
+  loading: WritableSignal<boolean> = signal(true);
+  id: WritableSignal<string> = signal('id');
+  cols: WritableSignal<string[]> = signal([]);
+  rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
-  private course =
-    this.route.snapshot.firstChild?.firstChild?.firstChild?.data['course'];
+  private canvasCourseService = inject(CanvasCourseService);
 
-  rows$ = this.canvasService
-    .getStudentSummaries(this.course.id)
-    .pipe(map((summaries) => this.getDataMap(summaries)))
-    .pipe(tap((rows) => (this._rows = rows)));
-
-  private getDataMap(data: StudentSummary[]): Map<number, OntaskRowData> {
-    return new Map(
-      data.map((summary) => [summary.id, omit(flatten(summary), 'id')])
+  async ngOnInit() {
+    const summaries = await this.canvasCourseService.getStudentSummaries();
+    this.rows.set(
+      new Map(
+        summaries.map((summary) => [summary.id, omit(flatten(summary), 'id')])
+      )
     );
-  }
-
-  private _rows!: Map<number, OntaskRowData>;
-  private _columns: string[] = [];
-  updateColumns(columns: string[]) {
-    this._columns = columns;
-    this.ontaskMergeService.setReady(columns.length > 0);
-  }
-
-  doColumnMerge() {
-    return of({
-      rows: this._rows,
-      columns: this._columns,
-    });
+    this.loading.set(false);
   }
 }

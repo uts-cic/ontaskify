@@ -4,21 +4,26 @@
   </mat-card-header>
   <mat-card-content>
     <h4>Course</h4>
-    <p>{{ course.name }}</p>
+    <p>
+      {{ course.name }}
+      <a [routerLink]="['/canvas']" mat-button color="primary">
+        Select another course
+      </a>
+    </p>
     <p>Students: {{ students.length }}</p>
 
-    <ng-container *ngIf="columns$ | async as columns">
+    <ng-container *ngIf="columns() as columns">
       <h4>Columns</h4>
       <mat-chip-listbox
         [multiple]="true"
-        (change)="updateDisplayColumns($event.value)"
+        (change)="updateColumns($event.value)"
         aria-label="Columns selection"
       >
         <mat-chip-option
           color="accent"
-          [selected]="displayColumns.includes(column)"
+          [selected]="columns.includes(column)"
           [value]="column"
-          *ngFor="let column of columns"
+          *ngFor="let column of availableColumns"
         >
           {{ column }}
         </mat-chip-option>
@@ -35,48 +40,7 @@
       </button>
       <button mat-menu-item (click)="addColumns('activity')">Activity</button>
     </mat-menu>
-
-    <h4>Export data</h4>
-    <mat-form-field appearance="outline">
-      <mat-label>Filename</mat-label>
-      <input matInput [(ngModel)]="filename" />
-    </mat-form-field>
-    <br />
-    <button mat-flat-button color="primary" (click)="download()">
-      Download CSV
-    </button>
   </mat-card-content>
 </mat-card>
 
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>{{ course.name }}</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container *ngFor="let column of displayColumns">
-        <ng-container [matColumnDef]="column">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header
-            [sortActionDescription]="'Sort by ' + column"
-          >
-            {{ column }}
-          </th>
-          <td mat-cell *matCellDef="let student">{{ student[column] }}</td>
-        </ng-container>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
-    </table>
-
-    <mat-paginator
-      [pageSizeOptions]="[10, 50, 100]"
-      showFirstLastButtons
-      aria-label="Select page of course students"
-    >
-    </mat-paginator>
-  </mat-card-content>
-</mat-card>
+<app-ontask-csv [name]="course.name || ''"></app-ontask-csv>

@@ -1,57 +1,38 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+import { assign, difference, zipObject } from 'lodash';
 import * as Papa from 'papaparse';
-import { BehaviorSubject } from 'rxjs';
+
+export type MergeData = {
+  id: string;
+  cols: string[];
+  rows: OntaskMergeMap;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class OntaskService {
-  private columns$ = this.getInitColumns();
-  private students$ = this.getInitStudents();
+  columns = signal<string[]>([]);
+  rows = signal<OntaskRow[]>([]);
 
-  addColumns(columns: string[]) {
-    const cols = this.columns$.value.concat(columns);
-    return this.columns$.next(cols);
-  }
-
-  getColumns() {
-    return this.columns$.value;
-  }
-
-  getColumnsAsObservable() {
-    return this.columns$.asObservable();
-  }
-
-  mergeData(mergeMap: Map<number, { [prop: string]: string | number | null }>) {
-    console.log(mergeMap);
-    const students = this.students$.value.map((student) => ({
-      ...student,
-      ...mergeMap.get(student.id),
-    }));
-    this.students$.next(students);
-  }
-
-  setStudents(students: OntaskStudent[]) {
-    this.students$.next(students);
-  }
-
-  getStudentsAsObservable() {
-    return this.students$.asObservable();
-  }
-
-  exportToCsv(filename: string, columns?: string[]) {
-    if (!columns) {
-      columns = this.getColumns();
-    }
-
-    const headers = columns.reduce(
-      (head: { [prop: string]: string }, column: string) => {
-        head[column] = column;
-        return head;
-      },
-      {} as { [prop: string]: string }
+  mergeData({ id, cols, rows }: MergeData) {
+    this.columns.mutate((columns) =>
+      columns.push(...difference(cols, columns))
     );
-    const data = [headers, ...this.students$.value];
+    this.rows.mutate((rs) =>
+      rs.forEach((row) => assign(row, rows.get(row[id])))
+    );
+  }
+
+  reset() {
+    this.columns.set([]);
+    this.rows.set([]);
+  }
+
+  exportToCsv(filename: string) {
+    const columns = this.columns();
+    const headers = zipObject(columns, columns);
+    const data = [headers, ...this.rows()];
     const csvData = Papa.unparse(data, { header: false, columns });
     const blob = new Blob([csvData], { type: 'text/csv' });
 
@@ -64,24 +45,5 @@ export class OntaskService {
       link.click();
       window.URL.revokeObjectURL(link.href);
     }
-  }
-
-  reset() {
-    this.columns$ = this.getInitColumns();
-    this.students$ = this.getInitStudents();
-  }
-
-  private getInitColumns() {
-    return new BehaviorSubject<string[]>([
-      'id',
-      'student_id',
-      'first_name',
-      'last_name',
-      'email',
-    ]);
-  }
-
-  private getInitStudents() {
-    return new BehaviorSubject<OntaskStudent[]>([]);
   }
 }

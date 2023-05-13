@@ -1,0 +1,45 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Export data</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field appearance="outline">
+      <mat-label>Filename</mat-label>
+      <input matInput [(ngModel)]="filename" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="download()">
+      Download CSV
+    </button>
+
+    <table
+      mat-table
+      matSort
+      [dataSource]="dataSource"
+      *ngIf="columns() as columns"
+    >
+      <ng-container *ngFor="let column of columns">
+        <ng-container [matColumnDef]="column">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            [sortActionDescription]="'Sort by ' + column"
+          >
+            {{ column }}
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row[column] }}</td>
+        </ng-container>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 50, 100]"
+      showFirstLastButtons
+      aria-label="Select page"
+    >
+    </mat-paginator>
+  </mat-card-content>
+</mat-card>

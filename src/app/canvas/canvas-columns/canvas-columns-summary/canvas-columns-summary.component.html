@@ -1,4 +1,4 @@
 <app-select-columns
-  [rows]="rows$ | async"
-  (selectionChange)="updateColumns($event)"
+  [rows]="rows()"
+  (selectionChange)="cols.set($event)"
 ></app-select-columns>

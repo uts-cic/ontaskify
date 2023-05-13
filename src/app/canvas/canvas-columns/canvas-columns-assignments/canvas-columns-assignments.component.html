@@ -1,9 +1,6 @@
-<mat-form-field
-  appearance="outline"
-  *ngIf="assignments$ | async as assignments"
->
+<mat-form-field appearance="outline" *ngIf="assignments() as assignments">
   <mat-label>Select assignment</mat-label>
-  <mat-select (selectionChange)="setAssignment($event.value)">
+  <mat-select (selectionChange)="assignment.set($event.value)">
     <mat-option *ngFor="let assignment of assignments" [value]="assignment">
       {{ assignment.name }}
     </mat-option>
@@ -11,7 +8,7 @@
 </mat-form-field>
 
 <app-select-columns
-  *ngIf="rows$ | async as rows"
+  *ngIf="rows() as rows"
   [rows]="rows"
-  (selectionChange)="updateColumns($event)"
+  (selectionChange)="cols.set($event)"
 ></app-select-columns>

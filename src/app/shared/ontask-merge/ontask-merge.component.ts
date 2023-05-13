@@ -3,15 +3,24 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
   inject,
+  Signal,
   Type,
   ViewChild,
   ViewContainerRef,
+  WritableSignal,
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { combineLatest, map, take } from 'rxjs';
 import { MaterialModule } from '../material.module';
-import { DoColumnMerge, OntaskMergeService } from '../ontask-merge.service';
+import { MergeData } from '../ontask.service';
+
+export interface OntaskMerge {
+  loading: WritableSignal<boolean>;
+  id: WritableSignal<string>;
+  cols: WritableSignal<string[]>;
+  rows: WritableSignal<OntaskMergeMap | null>;
+}
 
 @Component({
   selector: 'app-ontask-merge',
@@ -22,34 +31,41 @@ import { DoColumnMerge, OntaskMergeService } from '../ontask-merge.service';
 })
 export class OntaskMergeComponent implements AfterViewInit {
   private cdRef = inject(ChangeDetectorRef);
-  private ontaskMergeService = inject(OntaskMergeService);
   private dialogRef = inject(MatDialogRef);
-  private instance?: DoColumnMerge;
+
+  mergeData?: Signal<MergeData | null>;
 
   data = inject(MAT_DIALOG_DATA) as {
     title: string;
-    component: Type<DoColumnMerge>;
+    component: Type<OntaskMerge>;
   };
-
-  loading$ = this.ontaskMergeService.getLoadingAsObservable();
-  ready$ = this.ontaskMergeService.getReadyAsObservable();
-  actionDisabled$ = combineLatest([this.loading$, this.ready$]).pipe(
-    map(([loading, ready]) => loading || !ready)
-  );
 
   @ViewChild('componentContainer', { read: ViewContainerRef, static: true })
   componentContainer!: ViewContainerRef;
 
+  instance?: OntaskMerge;
+
   ngAfterViewInit() {
     const { component } = this.data;
     this.instance = this.componentContainer.createComponent(component).instance;
+    this.mergeData = computed(() => {
+      if (!this.instance) return null;
+      if (this.instance.loading()) return null;
+      const id = this.instance.id();
+      const cols = this.instance.cols();
+      const rows = this.instance.rows();
+      if (!(id && cols?.length > 0 && rows?.size)) return null;
+      return { id, cols, rows };
+    });
     this.cdRef.detectChanges();
   }
 
   apply() {
-    this.ontaskMergeService.setLoading(true);
-    this.instance!.doColumnMerge()
-      .pipe(take(1))
-      .subscribe((columns) => this.dialogRef.close(columns));
+    if (this.instance && this.mergeData?.()) {
+      const id = this.instance.id();
+      const cols = this.instance.cols();
+      const rows = this.instance.rows();
+      this.dialogRef.close({ id, cols, rows });
+    }
   }
 }

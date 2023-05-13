@@ -38,5 +38,5 @@
 <app-select-columns
   *ngIf="rows() as rows"
   [rows]="rows"
-  (selectionChange)="updateColumns($event)"
+  (selectionChange)="cols.set($event)"
 ></app-select-columns>

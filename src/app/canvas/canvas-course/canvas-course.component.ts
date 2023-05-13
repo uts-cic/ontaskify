@@ -1,72 +1,71 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
-import { OntaskMergeService } from 'src/app/shared/ontask-merge.service';
+import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { difference } from 'lodash';
+import { OntaskCsvComponent } from 'src/app/shared/ontask-csv/ontask-csv.component';
+import { OntaskMergeComponent } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { MaterialModule } from '../../shared/material.module';
 import { OntaskService } from '../../shared/ontask.service';
 import { CanvasColumnsActivityComponent } from '../canvas-columns/canvas-columns-activity/canvas-columns-activity.component';
 import { CanvasColumnsAssignmentsComponent } from '../canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
 import { CanvasColumnsSummaryComponent } from '../canvas-columns/canvas-columns-summary/canvas-columns-summary.component';
+import { CanvasCourseService } from '../services/canvas-course.service';
 
 @Component({
   selector: 'app-canvas-course',
   standalone: true,
-  imports: [CommonModule, FormsModule, MaterialModule],
+  imports: [CommonModule, RouterModule, MaterialModule, OntaskCsvComponent],
   templateUrl: './canvas-course.component.html',
   styleUrls: ['./canvas-course.component.scss'],
 })
-export class CanvasCourseComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CanvasCourseComponent implements OnInit, OnDestroy {
+  private dialog = inject(MatDialog);
+  private canvasCourseService = inject(CanvasCourseService);
   private ontaskService = inject(OntaskService);
-  private ontaskMergeService = inject(OntaskMergeService);
 
   course = inject(ActivatedRoute).snapshot.data['course'] as Course;
-  students = inject(ActivatedRoute).snapshot.data[
-    'students'
-  ] as OntaskStudent[];
+  students = inject(ActivatedRoute).snapshot.data['students'] as Student[];
 
-  columns$ = this.ontaskService.getColumnsAsObservable();
+  columns = this.ontaskService.columns;
+  rows = this.ontaskService.rows;
+  availableColumns = ['id'];
 
-  displayColumns: string[] = this.ontaskService
-    .getColumns()
-    .filter((col) => col !== 'id');
-  filename: string = this.course.name + '.csv';
-
-  dataSource = new MatTableDataSource<OntaskStudent>();
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-  private sub = this.ontaskService
-    .getStudentsAsObservable()
-    .subscribe((students) => (this.dataSource.data = students));
+  constructor() {
+    effect(() =>
+      this.availableColumns.push(
+        ...difference(this.columns(), this.availableColumns)
+      )
+    );
+  }
 
   ngOnInit() {
-    this.ontaskService.setStudents(this.students);
+    this.canvasCourseService.course.set(this.course);
+
+    this.columns.set(['student_id', 'first_name', 'last_name', 'email']);
+    this.rows.set(
+      this.students.map((student: Student): OntaskRow => {
+        const id = student.id;
+        const student_id = student['sis_user_id'];
+        const splitName = student['sortable_name'].split(', ');
+        const last_name = splitName[0];
+        const first_name = splitName[1];
+        const emailCandidate = student['email'] || student['login_id'];
+        const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailCandidate)
+          ? emailCandidate
+          : null;
+        return { id, student_id, first_name, last_name, email };
+      })
+    );
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    this.canvasCourseService.reset();
     this.ontaskService.reset();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  updateDisplayColumns(columns: string[]) {
-    this.displayColumns = columns;
+  updateColumns(columns: string[]) {
+    this.columns.set(columns);
   }
 
   addColumns(type: 'summary' | 'assignments' | 'activity') {
@@ -85,16 +84,11 @@ export class CanvasCourseComponent implements OnInit, OnDestroy, AfterViewInit {
       },
     };
 
-    const { title, component } = mergers[type];
-
-    this.ontaskMergeService
-      .addColumns(title, component)
+    this.dialog
+      .open(OntaskMergeComponent, { data: mergers[type] })
+      .afterClosed()
       .subscribe(
-        (columns) => columns?.length && this.displayColumns.push(...columns)
+        (mergeData) => mergeData && this.ontaskService.mergeData(mergeData)
       );
-  }
-
-  download() {
-    this.ontaskService.exportToCsv(this.filename, this.displayColumns);
   }
 }

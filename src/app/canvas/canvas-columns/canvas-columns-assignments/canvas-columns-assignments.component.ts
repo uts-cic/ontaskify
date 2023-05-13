@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { flatten } from 'flat';
-import { Observable, map, of, tap } from 'rxjs';
-import { MaterialModule } from 'src/app/shared/material.module';
 import {
-  DoColumnMerge,
-  OntaskMergeService,
-} from 'src/app/shared/ontask-merge.service';
+  Component,
+  OnInit,
+  WritableSignal,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { flatten } from 'flat';
+import { MaterialModule } from 'src/app/shared/material.module';
+import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
-import { CanvasService } from '../../services/canvas.service';
+import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({
   selector: 'app-canvas-columns-assignments',
@@ -18,44 +20,44 @@ import { CanvasService } from '../../services/canvas.service';
   templateUrl: './canvas-columns-assignments.component.html',
   styleUrls: ['./canvas-columns-assignments.component.scss'],
 })
-export class CanvasColumnsAssignmentsComponent implements DoColumnMerge {
-  private ontaskMergeService = inject(OntaskMergeService);
-  private canvasService = inject(CanvasService);
-  private route = inject(ActivatedRoute);
+export class CanvasColumnsAssignmentsComponent implements OnInit, OntaskMerge {
+  loading: WritableSignal<boolean> = signal(true);
+  id: WritableSignal<string> = signal('id');
+  cols: WritableSignal<string[]> = signal([]);
+  rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
-  private course =
-    this.route.snapshot.firstChild?.firstChild?.firstChild?.data['course'];
+  private canvasCourseService = inject(CanvasCourseService);
 
-  assignments$ = this.canvasService
-    .getAssignments(this.course.id)
-    .pipe(tap(() => this.ontaskMergeService.setLoading(false)));
+  assignments: WritableSignal<CanvasAssignment[] | null> = signal(null);
+  assignment: WritableSignal<CanvasAssignment | null> = signal(null);
 
-  rows$?: Observable<Map<number, OntaskRowData>>;
-
-  setAssignment(assignment: CanvasAssignment) {
-    this.rows$ = this.canvasService
-      .getAssignmentSubmissions(this.course.id, assignment.id)
-      .pipe(map((data) => this.getDataMap(data)))
-      .pipe(tap((rows) => (this._rows = rows)));
-  }
-
-  private getDataMap(data: CanvasSubmission[]): Map<number, OntaskRowData> {
-    return new Map(
-      data.map((submission) => [submission.user_id!, flatten(submission)])
+  constructor() {
+    effect(
+      async () => {
+        const assignment = this.assignment();
+        if (assignment) {
+          this.loading.set(true);
+          const subs = await this.canvasCourseService.getAssignmentSubmissions(
+            assignment.id
+          );
+          this.rows.set(
+            new Map(
+              subs.map((submission) => [
+                submission.user_id!,
+                flatten(submission),
+              ])
+            )
+          );
+          this.loading.set(false);
+        }
+      },
+      { allowSignalWrites: true }
     );
   }
 
-  private _rows!: Map<number, OntaskRowData>;
-  private _columns: string[] = [];
-  updateColumns(columns: string[]) {
-    this._columns = columns;
-    this.ontaskMergeService.setReady(columns.length > 0);
-  }
-
-  doColumnMerge() {
-    return of({
-      rows: this._rows,
-      columns: this._columns,
-    });
+  async ngOnInit() {
+    const assignments = await this.canvasCourseService.getAssignments();
+    this.assignments.set(assignments);
+    this.loading.set(false);
   }
 }

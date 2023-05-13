@@ -7,7 +7,7 @@
       <a
         mat-list-item
         [routerLink]="[course.id]"
-        *ngFor="let course of courses"
+        *ngFor="let course of courses$ | async"
       >
         {{ course.name }}
         <span matListItemMeta>{{ course.workflow_state }}</span>

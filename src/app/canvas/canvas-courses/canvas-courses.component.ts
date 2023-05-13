@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../shared/material.module';
+import { CanvasService } from '../services/canvas.service';
 
 @Component({
   selector: 'app-canvas-courses',
@@ -12,5 +13,6 @@ import { MaterialModule } from '../../shared/material.module';
   styleUrls: ['./canvas-courses.component.scss'],
 })
 export class CanvasCoursesComponent {
-  @Input({ required: true }) courses!: Course[];
+  // @Input({ required: true }) courses!: Course[];
+  courses$ = inject(CanvasService).getCourses();
 }

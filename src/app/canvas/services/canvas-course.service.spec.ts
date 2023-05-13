@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { OntaskMergeService } from './ontask-merge.service';
+import { CanvasCourseService } from './canvas-course.service';
 
-describe('OntaskMergeService', () => {
-  let service: OntaskMergeService;
+describe('CanvasCourseService', () => {
+  let service: CanvasCourseService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(OntaskMergeService);
+    service = TestBed.inject(CanvasCourseService);
   });
 
   it('should be created', () => {

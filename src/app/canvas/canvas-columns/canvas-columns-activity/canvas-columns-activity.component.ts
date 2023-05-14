@@ -146,8 +146,8 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
   fillInRows = effect(
     () => {
       const activities = this.contentNameFiltered().map((activity) => {
+        const row: OntaskRow = { id: activity.id };
         const data = activity as OntaskRow;
-        const row: OntaskRow = {};
         const name = this.contentName();
         const props = [
           'timesViewed',

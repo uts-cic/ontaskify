@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
+import { OntaskMergeMapPipe } from './shared/ontask-merge/ontask-merge-map.pipe';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
       MatDialogModule
     ),
     provideRouter(routes),
+    OntaskMergeMapPipe,
   ],
 };

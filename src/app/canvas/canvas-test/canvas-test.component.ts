@@ -194,13 +194,11 @@ export class CanvasTestComponent {
     this.paramVals.set(key, (target as HTMLInputElement)?.value || '');
   }
 
-  go() {
+  async go() {
     const endpoint = this.params?.reduce((result, param) => {
       const value = this.paramVals.get(param) || '';
       return result?.replace(`{${param}}`, value);
     }, this.path);
-    this.canvas
-      .query(`courses/${this.course}/${endpoint}`)
-      .subscribe((o) => (this.result = o));
+    this.result = await this.canvas.query(`courses/${this.course}/${endpoint}`);
   }
 }

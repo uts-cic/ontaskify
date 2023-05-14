@@ -7,8 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { flatten } from 'flat';
-import { omit } from 'lodash';
+import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
 import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 import { CanvasCourseService } from '../../services/canvas-course.service';
@@ -28,18 +27,12 @@ export class CanvasColumnsEnrolmentsComponent implements OnInit, OntaskMerge {
   error: WritableSignal<string | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
+  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
 
   async ngOnInit() {
     try {
       const enrolments = await this.canvasCourseService.getEnrollments();
-      this.rows.set(
-        new Map(
-          enrolments.map((enrolment) => [
-            enrolment.user_id,
-            omit(flatten(enrolment), 'user_id'),
-          ])
-        )
-      );
+      this.rows.set(this.ontaskMergeMapPipe.transform(enrolments, 'user_id'));
       this.loading.set(false);
     } catch (e) {
       console.log(e);

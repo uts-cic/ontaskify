@@ -7,8 +7,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { flatten } from 'flat';
 import { MaterialModule } from 'src/app/shared/material.module';
+import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
 import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 import { CanvasCourseService } from '../../services/canvas-course.service';
@@ -27,6 +27,7 @@ export class CanvasColumnsAssignmentsComponent implements OnInit, OntaskMerge {
   rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
+  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
 
   assignments: WritableSignal<CanvasAssignment[] | null> = signal(null);
   assignment: WritableSignal<CanvasAssignment | null> = signal(null);
@@ -37,16 +38,12 @@ export class CanvasColumnsAssignmentsComponent implements OnInit, OntaskMerge {
         const assignment = this.assignment();
         if (assignment) {
           this.loading.set(true);
-          const subs = await this.canvasCourseService.getAssignmentSubmissions(
-            assignment.id
-          );
+          const submissions =
+            await this.canvasCourseService.getAssignmentSubmissions(
+              assignment.id
+            );
           this.rows.set(
-            new Map(
-              subs.map((submission) => [
-                submission.user_id!,
-                flatten(submission),
-              ])
-            )
+            this.ontaskMergeMapPipe.transform(submissions, 'user_id')
           );
           this.loading.set(false);
         }

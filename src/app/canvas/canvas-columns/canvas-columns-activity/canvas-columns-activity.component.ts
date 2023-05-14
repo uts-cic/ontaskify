@@ -4,11 +4,13 @@ import {
   WritableSignal,
   computed,
   effect,
+  inject,
   signal,
 } from '@angular/core';
 import { chain, filter, isEmpty } from 'lodash';
 import { ParseResult, parse } from 'papaparse';
 import { MaterialModule } from 'src/app/shared/material.module';
+import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
 import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 
@@ -63,6 +65,8 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
   rows: WritableSignal<OntaskMergeMap | null> = signal(null);
+
+  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
 
   activity: WritableSignal<Activity[] | null> = signal(null);
   section: WritableSignal<string | null> = signal(null);
@@ -141,7 +145,7 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
 
   fillInRows = effect(
     () => {
-      const transform = (activity: Activity): OntaskRow => {
+      const activities = this.contentNameFiltered().map((activity) => {
         const data = activity as OntaskRow;
         const row: OntaskRow = {};
         const name = this.contentName();
@@ -156,13 +160,8 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
           row[`${name} - ${prop}`] = data[prop];
         }
         return row;
-      };
-
-      const rows = this.contentNameFiltered().reduce(
-        (map, activity) => map.set(activity.id, transform(activity)),
-        new Map<OntaskValue, OntaskRow>()
-      );
-      this.rows.set(rows);
+      });
+      this.rows.set(this.ontaskMergeMapPipe.transform(activities, 'id'));
     },
     { allowSignalWrites: true }
   );

@@ -1,5 +1,4 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { CanvasService } from './canvas.service';
 
 @Injectable({
@@ -8,36 +7,38 @@ import { CanvasService } from './canvas.service';
 export class CanvasCourseService {
   private canvasService = inject(CanvasService);
   course = signal<Course | null>(null);
-  courseId = computed(() => this.course()?.id || 0);
+  path = computed(() => `courses/${this.course()?.id || 0}`);
 
   async getStudentSummaries(): Promise<StudentSummary[]> {
-    const source$ = this.canvasService.getStudentSummaries(this.courseId());
-    return firstValueFrom(source$);
+    return this.canvasService.query<StudentSummary[]>(
+      `${this.path()}/analytics/student_summaries`
+    );
   }
 
   async getBulkUserProgress(): Promise<UserProgress[]> {
-    const source$ = this.canvasService.getBulkUserProgress(this.courseId());
-    return firstValueFrom(source$);
+    return this.canvasService.query<UserProgress[]>(
+      `${this.path()}/bulk_user_progress`
+    );
   }
 
   async getEnrollments(): Promise<CanvasEnrollment[]> {
-    const source$ = this.canvasService.getEnrollments(this.courseId());
-    return firstValueFrom(source$);
+    return this.canvasService.query<CanvasEnrollment[]>(
+      `${this.path()}/enrollments`
+    );
   }
 
   async getAssignments(): Promise<CanvasAssignment[]> {
-    const source$ = this.canvasService.getAssignments(this.courseId());
-    return firstValueFrom(source$);
+    return this.canvasService.query<CanvasAssignment[]>(
+      `${this.path()}/assignments`
+    );
   }
 
   async getAssignmentSubmissions(
     assignmentId: number
   ): Promise<CanvasSubmission[]> {
-    const source$ = this.canvasService.getAssignmentSubmissions(
-      this.courseId(),
-      assignmentId
+    return this.canvasService.query<UserProgress[]>(
+      `${this.path()}/assignments/${assignmentId}/submissions`
     );
-    return firstValueFrom(source$);
   }
 
   reset() {

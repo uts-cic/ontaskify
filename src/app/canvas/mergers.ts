@@ -3,6 +3,7 @@ import { CanvasColumnsActivityComponent } from './canvas-columns/canvas-columns-
 import { CanvasColumnsAssignmentsComponent } from './canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
 import { CanvasColumnsEnrolmentsComponent } from './canvas-columns/canvas-columns-enrolments/canvas-columns-enrolments.component';
 import { CanvasColumnsProgressComponent } from './canvas-columns/canvas-columns-progress/canvas-columns-progress.component';
+import { CanvasColumnsQuizzesComponent } from './canvas-columns/canvas-columns-quizzes/canvas-columns-quizzes.component';
 import { CanvasColumnsSummaryComponent } from './canvas-columns/canvas-columns-summary/canvas-columns-summary.component';
 
 export default [
@@ -21,6 +22,10 @@ export default [
   {
     component: CanvasColumnsAssignmentsComponent,
     title: 'Assignments',
+  },
+  {
+    component: CanvasColumnsQuizzesComponent,
+    title: 'Quizzes',
   },
   {
     component: CanvasColumnsActivityComponent,

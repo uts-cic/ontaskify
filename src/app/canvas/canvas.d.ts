@@ -106,18 +106,6 @@ interface Course {
   template?: boolean;
 }
 
-interface Student {
-  id: number;
-  name: string;
-  email: string;
-  login_id: string;
-  sis_user_id: string;
-  sortable_name: string;
-  short_name: string;
-  enrollment_state: string;
-  avatar_url: string;
-}
-
 interface StudentSummary {
   id: number;
   user_id: number;
@@ -284,4 +272,74 @@ interface CanvasEnrollment {
   current_period_unposted_final_score: number;
   current_period_unposted_current_grade: string;
   current_period_unposted_final_grade: string;
+}
+
+interface CanvasQuiz {
+  id: number;
+  title: string;
+  html_url: string;
+  mobile_url: string;
+  description: string;
+  quiz_type: string;
+  time_limit: number | null;
+  timer_autosubmit_disabled: boolean;
+  shuffle_answers: boolean;
+  show_correct_answers: boolean;
+  scoring_policy: string;
+  allowed_attempts: number;
+  one_question_at_a_time: boolean;
+  question_count: number;
+  points_possible: number;
+  cant_go_back: boolean;
+  ip_filter: string | null;
+  due_at: string | null;
+  lock_at: string | null;
+  unlock_at: string | null;
+  published: boolean;
+  locked_for_user: boolean;
+  lock_info: {
+    missing_permission: string;
+    asset_string: string;
+  };
+  lock_explanation: string;
+  hide_results: boolean | null;
+  show_correct_answers_at: string | null;
+  hide_correct_answers_at: string | null;
+  all_dates: {
+    due_at: string | null;
+    unlock_at: string | null;
+    lock_at: string | null;
+    base: boolean;
+  }[];
+  can_update: boolean;
+  require_lockdown_browser: boolean;
+  require_lockdown_browser_for_results: boolean;
+  require_lockdown_browser_monitor: boolean;
+  lockdown_browser_monitor_data: string | null;
+  permissions: {
+    manage: boolean;
+    read: boolean;
+    create: boolean;
+    update: boolean;
+    submit: boolean;
+    preview: boolean;
+    delete: boolean;
+    read_statistics: boolean;
+    grade: boolean;
+    review_grades: boolean;
+    view_answer_audits: boolean;
+  };
+  quiz_reports_url: string;
+  quiz_statistics_url: string;
+  important_dates: boolean;
+  quiz_submission_versions_html_url: string;
+  assignment_id: number | null;
+  one_time_results: boolean;
+  assignment_group_id: number;
+  show_correct_answers_last_attempt: boolean;
+  version_number: number;
+  has_access_code: boolean;
+  post_to_sis: boolean | null;
+  migration_id: string | null;
+  in_paced_course: boolean;
 }

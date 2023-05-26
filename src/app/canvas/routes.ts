@@ -1,6 +1,5 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Routes } from '@angular/router';
-import { uniqBy } from 'lodash';
 import { CanvasCourseComponent } from './canvas-course/canvas-course.component';
 import { CanvasCoursesComponent } from './canvas-courses/canvas-courses.component';
 import { CanvasPageComponent } from './canvas-page/canvas-page.component';
@@ -14,13 +13,9 @@ export const courseResolver: ResolveFn<Course> = (
   route: ActivatedRouteSnapshot
 ) => inject(CanvasService).getCourse(Number(route.paramMap.get('course_id')));
 
-export const studentsResolver: ResolveFn<Student[]> = async (
+export const studentsResolver: ResolveFn<UserProfile[]> = async (
   route: ActivatedRouteSnapshot
-) => {
-  const courseId = Number(route.paramMap.get('course_id'));
-  const students = await inject(CanvasService).getStudents(courseId);
-  return uniqBy(students, 'id');
-};
+) => inject(CanvasService).getStudents(Number(route.paramMap.get('course_id')));
 
 export default [
   {

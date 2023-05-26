@@ -26,7 +26,7 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
   private ontaskService = inject(OntaskService);
 
   course = inject(ActivatedRoute).snapshot.data['course'] as Course;
-  students = inject(ActivatedRoute).snapshot.data['students'] as Student[];
+  students = inject(ActivatedRoute).snapshot.data['students'] as UserProfile[];
 
   columns = this.ontaskService.columns;
   rows = this.ontaskService.rows;
@@ -47,7 +47,7 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
 
     this.columns.set(['student_id', 'first_name', 'last_name', 'email']);
     this.rows.set(
-      this.students.map((student: Student): OntaskRow => {
+      this.students.map((student: UserProfile): OntaskRow => {
         const id = student.id;
         const student_id = student['sis_user_id'];
         const splitName = student['sortable_name'].split(', ');

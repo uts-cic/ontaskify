@@ -1,0 +1,14 @@
+<mat-form-field appearance="outline" *ngIf="quizzes() as quizzes">
+  <mat-label>Select quiz</mat-label>
+  <mat-select (selectionChange)="quiz.set($event.value)">
+    <mat-option *ngFor="let quiz of quizzes" [value]="quiz">
+      {{ quiz.title }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<app-select-columns
+  *ngIf="rows() as rows"
+  [rows]="rows"
+  (selectionChange)="cols.set($event)"
+></app-select-columns>

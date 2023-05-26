@@ -35,7 +35,6 @@ export class CanvasColumnsEnrolmentsComponent implements OnInit, OntaskMerge {
       this.rows.set(this.ontaskMergeMapPipe.transform(enrolments, 'user_id'));
       this.loading.set(false);
     } catch (e) {
-      console.log(e);
       this.loading.set(false);
       const err = e as HttpErrorResponse;
       this.error.set(err.error?.error?.message || err.message);

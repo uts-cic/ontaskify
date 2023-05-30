@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
+    "deploy:code": "aws s3 sync dist/ontaskify/ s3://ontaskify/ --delete",
+    "deploy:infrastructure": "terraform apply",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

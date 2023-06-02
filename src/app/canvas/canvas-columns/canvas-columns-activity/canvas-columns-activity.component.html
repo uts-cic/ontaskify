@@ -1,12 +1,16 @@
 <div class="upload-field">
+  <p>Upload CSV file exported from Canvas analytics module:</p>
   <input type="file" (change)="handleFileUpload($event)" />
+  <span *ngIf="activity() as activity">
+    {{ activity.length ? activity.length + " records" : "Invalid file" }}
+  </span>
 </div>
 
-<mat-form-field appearance="outline" *ngIf="sectionsLookup() as sectionsLookup">
+<mat-form-field appearance="outline" *ngIf="sections() as sections">
   <mat-label>Select section</mat-label>
   <mat-select (selectionChange)="section.set($event.value)" [value]="section()">
-    <mat-option *ngFor="let sectionId of sections()" [value]="sectionId">
-      {{ sectionsLookup.get(sectionId) }}
+    <mat-option *ngFor="let sectionId of sections.keys()" [value]="sectionId">
+      {{ sections.get(sectionId) }}
     </mat-option>
   </mat-select>
 </mat-form-field>

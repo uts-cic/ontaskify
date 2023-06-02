@@ -1,16 +1,16 @@
-<mat-card>
+<mat-card *ngIf="rows(); else loading">
   <mat-card-header>
-    <mat-card-title>Export data</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
+    <mat-card-title>Export data for OnTask</mat-card-title>
+    <mat-card-subtitle>Students: {{ rows()!.length }}</mat-card-subtitle>
     <mat-form-field appearance="outline">
       <mat-label>Filename</mat-label>
       <input matInput [(ngModel)]="filename" />
+      <button mat-flat-button matSuffix color="primary" (click)="download()">
+        Download CSV
+      </button>
     </mat-form-field>
-    <button mat-flat-button color="primary" (click)="download()">
-      Download CSV
-    </button>
-
+  </mat-card-header>
+  <mat-card-content>
     <table
       mat-table
       matSort
@@ -18,7 +18,10 @@
       *ngIf="columns() as columns"
     >
       <ng-container *ngFor="let column of columns">
-        <ng-container [matColumnDef]="column">
+        <ng-container
+          [matColumnDef]="column"
+          [sticky]="['first_name', 'last_name'].includes(column)"
+        >
           <th
             mat-header-cell
             *matHeaderCellDef
@@ -31,7 +34,7 @@
         </ng-container>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: columns"></tr>
     </table>
 
@@ -43,3 +46,6 @@
     </mat-paginator>
   </mat-card-content>
 </mat-card>
+<ng-template #loading>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</ng-template>

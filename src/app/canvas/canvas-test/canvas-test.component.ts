@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, inject } from '@angular/core';
 import { MaterialModule } from 'src/app/shared/material.module';
 import { CanvasService } from '../services/canvas.service';
 
@@ -12,9 +11,9 @@ import { CanvasService } from '../services/canvas.service';
   styleUrls: ['./canvas-test.component.scss'],
 })
 export class CanvasTestComponent {
-  canvas = inject(CanvasService);
+  @Input({ required: true }) courses!: Course[];
 
-  courses = inject(ActivatedRoute).snapshot.data['courses'] as Course[];
+  canvas = inject(CanvasService);
   course?: number;
 
   paths = [

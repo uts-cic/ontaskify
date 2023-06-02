@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  OnInit,
   WritableSignal,
   effect,
   inject,
@@ -8,6 +9,7 @@ import {
 } from '@angular/core';
 import { MaterialModule } from 'src/app/shared/material.module';
 import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
+import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
@@ -18,7 +20,7 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-quizzes.component.html',
   styleUrls: ['./canvas-columns-quizzes.component.scss'],
 })
-export class CanvasColumnsQuizzesComponent {
+export class CanvasColumnsQuizzesComponent implements OnInit, OntaskMerge {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);

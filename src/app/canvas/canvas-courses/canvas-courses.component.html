@@ -7,11 +7,10 @@
       <a
         mat-list-item
         [routerLink]="[course.id]"
-        *ngFor="let course of courses$ | async"
+        *ngFor="let course of courses"
       >
         {{ course.name }}
         <span matListItemMeta>{{ course.workflow_state }}</span>
-        <!-- <pre>{{ course | json }}</pre> -->
       </a>
     </mat-nav-list>
   </mat-card-content>

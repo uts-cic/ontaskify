@@ -1,6 +1,7 @@
 import { OntaskMerger } from '../shared/ontask-merge/ontask-merge.component';
 import { CanvasColumnsActivityComponent } from './canvas-columns/canvas-columns-activity/canvas-columns-activity.component';
 import { CanvasColumnsAssignmentsComponent } from './canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
+import { CanvasColumnsDiscussionsComponent } from './canvas-columns/canvas-columns-discussions/canvas-columns-discussions.component';
 import { CanvasColumnsEnrolmentsComponent } from './canvas-columns/canvas-columns-enrolments/canvas-columns-enrolments.component';
 import { CanvasColumnsProgressComponent } from './canvas-columns/canvas-columns-progress/canvas-columns-progress.component';
 import { CanvasColumnsQuizzesComponent } from './canvas-columns/canvas-columns-quizzes/canvas-columns-quizzes.component';
@@ -26,6 +27,10 @@ export default [
   {
     component: CanvasColumnsQuizzesComponent,
     title: 'Quizzes',
+  },
+  {
+    component: CanvasColumnsDiscussionsComponent,
+    title: 'Discussion topics',
   },
   {
     component: CanvasColumnsActivityComponent,

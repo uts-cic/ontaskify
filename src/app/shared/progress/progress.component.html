@@ -1,0 +1,17 @@
+<div class="progress" *ngIf="progress() as progress">
+  <div *ngIf="progress.error">
+    Loading {{ progress.endpoint }}: {{ progress.error }}
+  </div>
+  <ng-container *ngIf="!progress.error">
+    <div class="spinner"><mat-spinner diameter="16"></mat-spinner></div>
+    <div class="endpoint">Loading {{ progress.endpoint }}...</div>
+    <div class="time" *ngIf="progress.time">
+      <div
+        class="progress-bar"
+        [style]="animation"
+        *ngFor="let animation of animation()"
+      ></div>
+    </div>
+    <div class="items" *ngIf="progress.items">{{ progress.items }}</div>
+  </ng-container>
+</div>

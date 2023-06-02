@@ -1,0 +1,26 @@
+<mat-form-field appearance="outline" *ngIf="discussions() as discussions">
+  <mat-label>Select discussion topics</mat-label>
+  <mat-select
+    [ngModel]="selected()"
+    (selectionChange)="selected.set($event.value)"
+    multiple
+  >
+    <mat-select-trigger *ngIf="selected() as selected">
+      {{ selected.length === 1 ? "1 topic" : selected.length + " topics" }}:
+      <small>
+        <ng-container *ngFor="let discussion of selected; let isLast = last">
+          {{ discussion.title + (isLast ? "" : ", ") }}
+        </ng-container>
+      </small>
+    </mat-select-trigger>
+    <mat-option *ngFor="let discussion of discussions" [value]="discussion">
+      {{ discussion.title }} ({{ discussion.discussion_subentry_count }})
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<app-select-columns
+  *ngIf="rows() as rows"
+  [rows]="rows"
+  (selectionChange)="cols.set($event)"
+></app-select-columns>

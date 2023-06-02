@@ -5,19 +5,27 @@
   <mat-card-content class="content">
     <mat-form-field appearance="outline" class="input">
       <mat-label>Insert your Canvas token</mat-label>
-      <input matInput type="password" [(ngModel)]="token" #input />
-      <button *ngIf="!token" mat-icon-button matSuffix (click)="paste()">
+      <input
+        matInput
+        type="password"
+        [ngModel]="tokenInput()"
+        (ngModelChange)="tokenInput.set($event.trim())"
+        #input
+      />
+      <button *ngIf="!tokenInput()" mat-icon-button matSuffix (click)="paste()">
         <mat-icon color="primary">content_paste_go</mat-icon>
       </button>
-      <mat-icon *ngIf="isValid" matSuffix color="accent">check_circle</mat-icon>
-      <mat-icon *ngIf="token && !isValid" matSuffix color="warn"
+      <mat-icon *ngIf="tokenIsValid() === true" matSuffix color="accent"
+        >check_circle</mat-icon
+      >
+      <mat-icon *ngIf="tokenIsValid() === false" matSuffix color="warn"
         >error</mat-icon
       >
     </mat-form-field>
     <button
       mat-raised-button
       color="primary"
-      [disabled]="!isValid"
+      [disabled]="!tokenIsValid()"
       (click)="startSession()"
     >
       Start session

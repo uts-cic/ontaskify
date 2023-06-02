@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { difference } from 'lodash';
 import { OntaskCsvComponent } from 'src/app/shared/ontask-csv/ontask-csv.component';
 import {
@@ -21,12 +28,11 @@ import { CanvasCourseService } from '../services/canvas-course.service';
   styleUrls: ['./canvas-course.component.scss'],
 })
 export class CanvasCourseComponent implements OnInit, OnDestroy {
+  @Input({ required: true }) course!: Course;
+
   private dialog = inject(MatDialog);
   private canvasCourseService = inject(CanvasCourseService);
   private ontaskService = inject(OntaskService);
-
-  course = inject(ActivatedRoute).snapshot.data['course'] as Course;
-  students = inject(ActivatedRoute).snapshot.data['students'] as UserProfile[];
 
   columns = this.ontaskService.columns;
   rows = this.ontaskService.rows;
@@ -42,12 +48,14 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.canvasCourseService.course.set(this.course);
-
     this.columns.set(['student_id', 'first_name', 'last_name', 'email']);
+
+    const students = await this.canvasCourseService.getStudents();
+
     this.rows.set(
-      this.students.map((student: UserProfile): OntaskRow => {
+      students.map((student: UserProfile): OntaskRow => {
         const id = student.id;
         const student_id = student['sis_user_id'];
         const splitName = student['sortable_name'].split(', ');
@@ -56,7 +64,7 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
         const emailCandidate = student['email'] || student['login_id'];
         const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailCandidate)
           ? emailCandidate
-          : null;
+          : '';
         return { id, student_id, first_name, last_name, email };
       })
     );

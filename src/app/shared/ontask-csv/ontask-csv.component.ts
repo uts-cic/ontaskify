@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   Component,
   Input,
   OnInit,
@@ -22,7 +21,7 @@ import { OntaskService } from '../ontask.service';
   templateUrl: './ontask-csv.component.html',
   styleUrls: ['./ontask-csv.component.scss'],
 })
-export class OntaskCsvComponent implements OnInit, AfterViewInit {
+export class OntaskCsvComponent implements OnInit {
   private ontaskService = inject(OntaskService);
   columns = this.ontaskService.columns;
   rows = this.ontaskService.rows;
@@ -33,20 +32,22 @@ export class OntaskCsvComponent implements OnInit, AfterViewInit {
 
   dataSource = new MatTableDataSource<OntaskRow>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) set paginator(paginator: MatPaginator) {
+    if (!paginator) return;
+    this.dataSource.paginator = paginator;
+  }
+
+  @ViewChild(MatSort) set sort(sort: MatSort) {
+    if (!sort) return;
+    this.dataSource.sort = sort;
+  }
 
   constructor() {
-    effect(() => (this.dataSource.data = this.rows()));
+    effect(() => (this.dataSource.data = this.rows() || []));
   }
 
   ngOnInit() {
     this.filename = this.name + '.csv';
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   download() {

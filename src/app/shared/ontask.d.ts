@@ -1,5 +1,3 @@
-type OntaskValue = string | number | null;
-type OntaskRow = {
-  [prop: string]: OntaskValue;
-};
-type OntaskMergeMap = Map<OntaskValue, OntaskRow>;
+type OntaskRowValue = string | number;
+type OntaskRow = Record<string, OntaskRowValue>;
+type OntaskMergeMap = Map<OntaskRowValue, OntaskRow>;

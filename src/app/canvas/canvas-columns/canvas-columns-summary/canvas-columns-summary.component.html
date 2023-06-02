@@ -1,4 +1,5 @@
 <app-select-columns
-  [rows]="rows()"
+  *ngIf="rows() as rows"
+  [rows]="rows"
   (selectionChange)="cols.set($event)"
 ></app-select-columns>

@@ -10,6 +10,14 @@ export class CanvasCourseService {
   course = signal<Course | null>(null);
   path = computed(() => `courses/${this.course()?.id || 0}`);
 
+  async getStudents(): Promise<UserProfile[]> {
+    const params = new HttpParams().set('enrollment_type', 'student');
+    return this.canvasService.queryMany<UserProfile>(
+      `${this.path()}/users`,
+      params
+    );
+  }
+
   async getStudentSummaries(): Promise<StudentSummary[]> {
     return this.canvasService.queryMany<StudentSummary>(
       `${this.path()}/analytics/student_summaries`
@@ -59,6 +67,20 @@ export class CanvasCourseService {
     //   quiz_submissions: CanvasQuiz[];
     // }>(`${this.path()}/quizzes/${quizId}/submissions`, params);
     // return result.quiz_submissions;
+  }
+
+  async getDiscussionTopics(): Promise<CanvasDiscussionTopic[]> {
+    return this.canvasService.queryMany<CanvasDiscussionTopic>(
+      `${this.path()}/discussion_topics`
+    );
+  }
+
+  async getDiscussionEntries(topicId: number): Promise<DiscussionEntry[]> {
+    const { view } = await this.canvasService.query<DiscussionTopicView>(
+      `${this.path()}/discussion_topics/${topicId}/view`
+    );
+
+    return view;
   }
 
   reset() {

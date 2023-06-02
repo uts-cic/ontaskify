@@ -1,7 +1,13 @@
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+  HttpResponse,
+} from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { at } from 'lodash';
-import { firstValueFrom } from 'rxjs';
+import { at, now } from 'lodash';
+import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { ProgressService } from 'src/app/shared/progress/progress.service';
 import { TokenService } from './token.service';
 
 const extractNextPage = (linkHeader: string | null): string | null => {
@@ -16,17 +22,37 @@ const extractNextPage = (linkHeader: string | null): string | null => {
 export class CanvasService {
   private httpClient = inject(HttpClient);
   private token = inject(TokenService).token;
+  private progress = inject(ProgressService).progress;
 
   async request<T>(endpoint: string, params: HttpParams = new HttpParams()) {
     const basePath = '/api/v1';
     const headers = { authorization: `Bearer ${this.token()}` };
     const options = { headers, params, observe: 'response' as 'response' };
-    const request$ = this.httpClient.get<T>(`${basePath}/${endpoint}`, options);
+    const request$ = this.httpClient
+      .get<T>(`${basePath}/${endpoint}`, options)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const message =
+            error.error?.errors?.[0]?.message ||
+            error.error?.error?.message ||
+            error.error?.message ||
+            error.message ||
+            'Unknown error';
+          console.log(message);
+          this.progress.mutate((progress) => {
+            if (progress) progress.error = message;
+          });
+          return throwError(() => new Error(message));
+        })
+      );
     return firstValueFrom(request$) as Promise<HttpResponse<T>>;
   }
 
   async query<T>(endpoint: string, params: HttpParams = new HttpParams()) {
-    return (await this.request<T>(endpoint, params)).body as T;
+    this.progress.set({ endpoint });
+    const response = await this.request<T>(endpoint, params);
+    this.progress.set(null);
+    return response.body as T;
   }
 
   async queryMany<T>(
@@ -36,10 +62,12 @@ export class CanvasService {
     perPage = 100
   ) {
     params = params.set('per_page', perPage);
+    this.progress.set({ endpoint, items: 0, time: 0 });
 
     const items: T[] = [];
     let page = 0;
     while (true) {
+      const start = now();
       const response = await this.request(endpoint, params);
       const responseItems = path
         ? at(response.body as { [prop: string]: T[] }, [path])[0]
@@ -53,7 +81,12 @@ export class CanvasService {
 
       if (nextPage) {
         params = params.set('page', nextPage);
+        this.progress.mutate((progress) => {
+          progress!.items = items.length;
+          progress!.time = now() - start;
+        });
       } else {
+        this.progress.set(null);
         break;
       }
     }
@@ -71,10 +104,5 @@ export class CanvasService {
 
   async getCourse(id: number): Promise<Course> {
     return this.query<Course>('courses/' + id);
-  }
-
-  async getStudents(id: number): Promise<UserProfile[]> {
-    const params = new HttpParams().set('enrollment_type', 'student');
-    return this.queryMany<UserProfile>('courses/' + id + '/users', params);
   }
 }

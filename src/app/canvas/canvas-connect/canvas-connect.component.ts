@@ -1,6 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MaterialModule } from '../../shared/material.module';
 import { TokenService } from '../services/token.service';
 
@@ -12,26 +20,25 @@ import { TokenService } from '../services/token.service';
   styleUrls: ['./canvas-connect.component.scss'],
 })
 export class CanvasConnectComponent {
-  private tokenSignal = inject(TokenService).token;
-
-  private _token = this.tokenSignal() || '';
-  get token() {
-    return this._token;
-  }
-  set token(token: string) {
-    this._token = token?.trim() || '';
-    this.isValid = !!this._token?.match(/^[\d]{4}~[\w]{64}$/);
-  }
-  isValid = false;
+  token = inject(TokenService).token;
+  tokenInput = signal<string>('');
+  tokenIsValid = computed(() => {
+    const token = this.tokenInput();
+    if (!token?.length) return null;
+    return !!token.match(/^[\d]{4}~[\w]{64}$/);
+  });
 
   @ViewChild('input') inputEl!: ElementRef;
 
   async paste() {
-    this.token = await navigator.clipboard.readText();
+    const textFromClipboard = await navigator.clipboard.readText();
+    this.tokenInput.set(textFromClipboard);
     setTimeout(() => this.inputEl.nativeElement.select(), 0);
   }
 
+  private router = inject(Router);
   startSession() {
-    this.isValid && this.tokenSignal.set(this.token);
+    this.token.set(this.tokenInput());
+    this.router.navigate([], { onSameUrlNavigation: 'reload' });
   }
 }

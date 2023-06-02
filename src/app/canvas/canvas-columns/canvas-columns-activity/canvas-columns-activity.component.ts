@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { chain, filter, isEmpty } from 'lodash';
+import { chain, filter, isEmpty, sortBy } from 'lodash';
 import { ParseResult, parse } from 'papaparse';
 import { MaterialModule } from 'src/app/shared/material.module';
 import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
@@ -83,20 +83,14 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
     filter(this.contentTypeFiltered(), ['contentName', this.contentName()])
   );
 
-  sectionsLookup = computed(() =>
-    this.activity()?.reduce(
+  sections = computed(() => {
+    const sections = this.activity()?.reduce(
       (map, activity: Activity) =>
         map.set(activity.sectionId, activity.sectionName),
       new Map<string, string>()
-    )
-  );
-
-  sections = computed(() => {
-    const entries = this.sectionsLookup()?.entries() || [];
-    return chain([...entries])
-      .sortBy(1)
-      .map(0)
-      .value();
+    );
+    if (!sections?.size) return null;
+    return new Map(sortBy(Array.from(sections), ([, value]) => value));
   });
 
   contentTypes = computed(() => {
@@ -113,11 +107,37 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
       : null;
   });
 
+  resetSection = effect(
+    () => {
+      this.activity();
+      this.section.set(null);
+    },
+    { allowSignalWrites: true }
+  );
+
+  resetContentType = effect(
+    () => {
+      this.section();
+      this.contentType.set(null);
+    },
+    { allowSignalWrites: true }
+  );
+
+  resetContentName = effect(
+    () => {
+      this.contentType();
+      this.contentName.set(null);
+    },
+    { allowSignalWrites: true }
+  );
+
   fillInSection = effect(
     () => {
       const sections = this.sections();
-      if (sections?.length === 1) {
-        this.section.set(sections[0]);
+      if (sections?.size === 1) {
+        this.section.set(Array.from(sections.keys())[0]);
+      } else if (!sections) {
+        this.section.set(null);
       }
     },
     { allowSignalWrites: true }
@@ -128,6 +148,8 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
       const contentTypes = this.contentTypes();
       if (contentTypes?.length === 1) {
         this.contentName.set(contentTypes[0]);
+      } else if (!contentTypes?.length) {
+        this.contentName.set(null);
       }
     },
     { allowSignalWrites: true }
@@ -138,6 +160,8 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
       const contentNames = this.contentNames();
       if (contentNames?.length === 1) {
         this.contentName.set(contentNames[0]);
+      } else if (!contentNames?.length) {
+        this.contentName.set(null);
       }
     },
     { allowSignalWrites: true }
@@ -145,23 +169,27 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
 
   fillInRows = effect(
     () => {
-      const activities = this.contentNameFiltered().map((activity) => {
-        const row: OntaskRow = { id: activity.id };
-        const data = activity as OntaskRow;
-        const name = this.contentName();
-        const props = [
-          'timesViewed',
-          'timesParticipated',
-          'startDate',
-          'firstViewed',
-          'lastViewed',
-        ];
-        for (const prop of props) {
-          row[`${name} - ${prop}`] = data[prop];
-        }
-        return row;
-      });
-      this.rows.set(this.ontaskMergeMapPipe.transform(activities, 'id'));
+      const name = this.contentName();
+      const activities =
+        name &&
+        this.contentNameFiltered().map((activity) => {
+          const row: OntaskRow = { id: activity.id };
+          const data = activity as OntaskRow;
+          const props = [
+            'timesViewed',
+            'timesParticipated',
+            'startDate',
+            'firstViewed',
+            'lastViewed',
+          ];
+          for (const prop of props) {
+            row[`${name} - ${prop}`] = data[prop];
+          }
+          return row;
+        });
+      this.rows.set(
+        activities ? this.ontaskMergeMapPipe.transform(activities, 'id') : null
+      );
     },
     { allowSignalWrites: true }
   );
@@ -177,10 +205,13 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
         skipEmptyLines: true,
         transformHeader,
         complete: (result: ParseResult<Activity>) => {
-          this.activity.set(result.data);
+          this.activity.set(result.data[0]?.id ? result.data : []);
           this.loading.set(false);
         },
       });
+    } else {
+      this.activity.set(null);
+      this.loading.set(false);
     }
   }
 }

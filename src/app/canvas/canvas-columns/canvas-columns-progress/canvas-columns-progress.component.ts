@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   OnInit,
@@ -9,6 +8,7 @@ import {
 } from '@angular/core';
 import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
 import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
+import { ProgressService } from 'src/app/shared/progress/progress.service';
 import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
@@ -28,16 +28,17 @@ export class CanvasColumnsProgressComponent implements OnInit, OntaskMerge {
 
   private canvasCourseService = inject(CanvasCourseService);
   private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private progress = inject(ProgressService).progress;
 
   async ngOnInit() {
     try {
       const progress = await this.canvasCourseService.getBulkUserProgress();
       this.rows.set(this.ontaskMergeMapPipe.transform(progress, 'id'));
       this.loading.set(false);
-    } catch (e) {
+    } catch (err) {
       this.loading.set(false);
-      const err = e as HttpErrorResponse;
-      this.error.set(err.error?.error?.message || err.message);
+      this.error.set((err as Error).message);
+      this.progress.set(null);
     }
   }
 }

@@ -343,3 +343,83 @@ interface CanvasQuiz {
   migration_id: string | null;
   in_paced_course: boolean;
 }
+
+type CanvasDiscussionTopic = {
+  id: number;
+  title?: string;
+  message?: string;
+  html_url?: string;
+  posted_at?: string;
+  last_reply_at?: string;
+  require_initial_post?: boolean;
+  user_can_see_posts?: boolean;
+  discussion_subentry_count?: number;
+  read_state?: 'read' | 'unread';
+  unread_count?: number;
+  subscribed?: boolean;
+  subscription_hold?:
+    | 'initial_post_required'
+    | 'not_in_group_set'
+    | 'not_in_group'
+    | 'topic_is_announcement';
+  assignment_id?: number | null;
+  delayed_post_at?: string;
+  published?: boolean;
+  lock_at?: string;
+  locked?: boolean;
+  pinned?: boolean;
+  locked_for_user?: boolean;
+  lock_info?: LockInfo;
+  lock_explanation?: string;
+  user_name?: string;
+  topic_children?: number[];
+  group_topic_children?: {
+    id: number;
+    group_id: number;
+  }[];
+  root_topic_id?: number;
+  podcast_url?: string;
+  discussion_type?: 'side_comment' | 'threaded';
+  group_category_id?: number | null;
+  attachments?: {
+    'content-type'?: string;
+    url?: string;
+    filename?: string;
+    display_name?: string;
+  }[];
+  permissions?: object;
+  allow_rating?: boolean;
+  only_graders_can_rate?: boolean;
+  sort_by_rating?: boolean;
+};
+
+type DiscussionParticipant = {
+  id: number;
+  anonymous_id: string | null;
+  display_name: string;
+  avatar_image_url: string;
+  html_url: string;
+  pronouns: string | null;
+};
+
+type DiscussionEntry = {
+  id: number;
+  editor_id: number;
+  user_id: number;
+  parent_id: number | null;
+  created_at: string;
+  updated_at: string;
+  rating_count: number | null;
+  rating_sum: number | null;
+  message: string;
+  replies: DiscussionEntry[];
+};
+
+type DiscussionTopicView = {
+  unread_entries: number[];
+  forced_entries: any[];
+  entry_ratings: Record<string, any>;
+  participants: DiscussionParticipant[];
+  view: DiscussionEntry[];
+  new_entries: any[];
+};

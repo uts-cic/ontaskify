@@ -1,4 +1,19 @@
+mat-card-header {
+  flex-direction: column;
+}
 mat-form-field {
-  margin: 1rem 1rem 0 0;
-  width: 40%;
+  margin: 1rem auto 0;
+  width: 100%;
+  max-width: 50rem;
+}
+[matsuffix] {
+  margin-right: 0.75rem;
+}
+mat-card-content {
+  padding: 0;
+  overflow-x: auto;
+}
+mat-paginator {
+  position: sticky;
+  left: 0;
 }

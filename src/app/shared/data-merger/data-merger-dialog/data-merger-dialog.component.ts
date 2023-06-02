@@ -3,51 +3,47 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
-  computed,
-  inject,
   Signal,
-  Type,
   ViewChild,
   ViewContainerRef,
-  WritableSignal,
+  computed,
+  inject,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MaterialModule } from '../material.module';
-import { MergeData } from '../ontask.service';
-
-export interface OntaskMerge {
-  loading: WritableSignal<boolean>;
-  id: WritableSignal<string>;
-  cols: WritableSignal<string[]>;
-  rows: WritableSignal<OntaskMergeMap | null>;
-  error?: WritableSignal<string | null>;
-}
-
-export interface OntaskMerger {
-  title: string;
-  component: Type<OntaskMerge>;
-}
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MergeData } from '../../ontask.service';
+import { DataFetcher, DataMerger } from '../data-merger.service';
 
 @Component({
-  selector: 'app-ontask-merge',
+  selector: 'app-data-merger-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule],
-  templateUrl: './ontask-merge.component.html',
-  styleUrls: ['./ontask-merge.component.scss'],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatProgressBarModule,
+  ],
+  templateUrl: './data-merger-dialog.component.html',
+  styleUrls: ['./data-merger-dialog.component.scss'],
 })
-export class OntaskMergeComponent implements AfterViewInit {
+export class DataMergerDialogComponent implements AfterViewInit {
   private cdRef = inject(ChangeDetectorRef);
   private dialogRef = inject(MatDialogRef);
 
   mergeData?: Signal<MergeData | null>;
   error?: Signal<string | null>;
 
-  data = inject(MAT_DIALOG_DATA) as OntaskMerger;
+  data = inject(MAT_DIALOG_DATA) as DataMerger;
 
   @ViewChild('componentContainer', { read: ViewContainerRef, static: true })
   componentContainer!: ViewContainerRef;
 
-  instance?: OntaskMerge;
+  instance?: DataFetcher;
 
   ngAfterViewInit() {
     const { component } = this.data;

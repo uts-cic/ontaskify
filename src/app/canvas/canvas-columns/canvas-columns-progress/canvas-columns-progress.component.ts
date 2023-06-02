@@ -7,8 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import {
-  OntaskMerge,
-  OntaskMergeMapPipe,
+  DataFetcher,
+  DataMergerService,
   ProgressService,
   SelectColumnsComponent,
 } from '@app/shared';
@@ -21,7 +21,7 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-progress.component.html',
   styleUrls: ['./canvas-columns-progress.component.scss'],
 })
-export class CanvasColumnsProgressComponent implements OnInit, OntaskMerge {
+export class CanvasColumnsProgressComponent implements OnInit, DataFetcher {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
@@ -29,13 +29,13 @@ export class CanvasColumnsProgressComponent implements OnInit, OntaskMerge {
   error: WritableSignal<string | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
-  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private dataMergerService = inject(DataMergerService);
   private progress = inject(ProgressService).progress;
 
   async ngOnInit() {
     try {
       const progress = await this.canvasCourseService.getBulkUserProgress();
-      this.rows.set(this.ontaskMergeMapPipe.transform(progress, 'id'));
+      this.rows.set(this.dataMergerService.transform(progress, 'id', 'id'));
       this.loading.set(false);
     } catch (err) {
       this.loading.set(false);

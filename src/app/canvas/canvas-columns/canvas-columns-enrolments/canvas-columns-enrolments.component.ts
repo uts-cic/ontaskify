@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 
 import {
-  OntaskMerge,
-  OntaskMergeMapPipe,
+  DataFetcher,
+  DataMergerService,
   SelectColumnsComponent,
 } from '@app/shared';
 import { CanvasCourseService } from '../../services/canvas-course.service';
@@ -22,7 +22,7 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-enrolments.component.html',
   styleUrls: ['./canvas-columns-enrolments.component.scss'],
 })
-export class CanvasColumnsEnrolmentsComponent implements OnInit, OntaskMerge {
+export class CanvasColumnsEnrolmentsComponent implements OnInit, DataFetcher {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
@@ -30,12 +30,14 @@ export class CanvasColumnsEnrolmentsComponent implements OnInit, OntaskMerge {
   error: WritableSignal<string | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
-  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private dataMergerService = inject(DataMergerService);
 
   async ngOnInit() {
     try {
       const enrolments = await this.canvasCourseService.getEnrollments();
-      this.rows.set(this.ontaskMergeMapPipe.transform(enrolments, 'user_id'));
+      this.rows.set(
+        this.dataMergerService.transform(enrolments, 'user_id', 'id')
+      );
       this.loading.set(false);
     } catch (e) {
       this.loading.set(false);

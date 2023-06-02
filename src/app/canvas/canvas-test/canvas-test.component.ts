@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
-import { MaterialModule } from '@app/shared';
+import { MaterialModule } from '../material.module';
 import { CanvasService } from '../services/canvas.service';
 
 @Component({

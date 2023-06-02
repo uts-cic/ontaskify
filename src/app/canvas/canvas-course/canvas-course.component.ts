@@ -7,17 +7,14 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import {
-  MaterialModule,
+  DataMergerService,
   OntaskCsvComponent,
-  OntaskMergeComponent,
-  OntaskMerger,
   OntaskService,
 } from '@app/shared';
 import { difference } from 'lodash';
-
+import { MaterialModule } from '../material.module';
 import MERGERS from '../mergers';
 import { CanvasCourseService } from '../services/canvas-course.service';
 
@@ -31,15 +28,13 @@ import { CanvasCourseService } from '../services/canvas-course.service';
 export class CanvasCourseComponent implements OnInit, OnDestroy {
   @Input({ required: true }) course!: CanvasCourse;
 
-  private dialog = inject(MatDialog);
   private canvasCourseService = inject(CanvasCourseService);
+  private dataMergerService = inject(DataMergerService);
   private ontaskService = inject(OntaskService);
 
   columns = this.ontaskService.columns;
   rows = this.ontaskService.rows;
   availableColumns = ['id'];
-
-  mergers = MERGERS;
 
   constructor() {
     effect(() =>
@@ -80,12 +75,7 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
     this.columns.set(columns);
   }
 
-  addColumns(merger: OntaskMerger) {
-    this.dialog
-      .open(OntaskMergeComponent, { data: merger })
-      .afterClosed()
-      .subscribe(
-        (mergeData) => mergeData && this.ontaskService.mergeData(mergeData)
-      );
+  addColumns() {
+    this.dataMergerService.openMergerSelection(MERGERS);
   }
 }

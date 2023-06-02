@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
-import { MaterialModule } from '@app/shared';
+import { MaterialModule } from '../material.module';
 
 @Component({
   selector: 'app-canvas-courses',

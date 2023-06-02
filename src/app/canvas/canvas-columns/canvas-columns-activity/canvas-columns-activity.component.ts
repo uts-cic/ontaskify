@@ -8,13 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import {
-  MaterialModule,
-  OntaskMerge,
-  OntaskMergeMapPipe,
+  DataFetcher,
+  DataMergerService,
   SelectColumnsComponent,
 } from '@app/shared';
 import { chain, filter, isEmpty, sortBy } from 'lodash';
 import { ParseResult, parse } from 'papaparse';
+import { MaterialModule } from '../../material.module';
 
 type Activity = {
   id: number;
@@ -62,13 +62,13 @@ const transformHeader = (header: string): string => {
   templateUrl: './canvas-columns-activity.component.html',
   styleUrls: ['./canvas-columns-activity.component.scss'],
 })
-export class CanvasColumnsActivityComponent implements OntaskMerge {
+export class CanvasColumnsActivityComponent implements DataFetcher {
   loading: WritableSignal<boolean> = signal(false);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
   rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
-  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private dataMergerService = inject(DataMergerService);
 
   activity: WritableSignal<Activity[] | null> = signal(null);
   section: WritableSignal<string | null> = signal(null);
@@ -190,7 +190,9 @@ export class CanvasColumnsActivityComponent implements OntaskMerge {
           return row;
         });
       this.rows.set(
-        activities ? this.ontaskMergeMapPipe.transform(activities, 'id') : null
+        activities
+          ? this.dataMergerService.transform(activities, 'id', 'id')
+          : null
       );
     },
     { allowSignalWrites: true }

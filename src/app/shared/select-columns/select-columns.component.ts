@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatSelectionListChange } from '@angular/material/list';
+import { MatListModule, MatSelectionListChange } from '@angular/material/list';
 import { isNumber, isString } from 'lodash';
-import { MaterialModule } from '../material.module';
 import { PreviewPipe } from './preview.pipe';
 
 @Component({
   selector: 'app-select-columns',
   standalone: true,
-  imports: [CommonModule, MaterialModule, PreviewPipe],
+  imports: [CommonModule, MatListModule, PreviewPipe],
   templateUrl: './select-columns.component.html',
   styleUrls: ['./select-columns.component.scss'],
 })

@@ -29,18 +29,9 @@
       </mat-chip-listbox>
     </ng-container>
 
-    <button mat-flat-button color="primary" [matMenuTriggerFor]="addColumn">
+    <button mat-flat-button color="primary" (click)="addColumns()">
       Add columns
     </button>
-    <mat-menu #addColumn="matMenu" class="menu">
-      <button
-        mat-menu-item
-        (click)="addColumns(merger)"
-        *ngFor="let merger of mergers"
-      >
-        {{ merger.title }}
-      </button>
-    </mat-menu>
   </mat-card-content>
 </mat-card>
 

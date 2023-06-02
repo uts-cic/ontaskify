@@ -8,13 +8,10 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  MaterialModule,
-  OntaskMerge,
-  SelectColumnsComponent,
-} from '@app/shared';
+import { DataFetcher, SelectColumnsComponent } from '@app/shared';
 import { difference, max, min } from 'lodash';
 
+import { MaterialModule } from '../../material.module';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({
@@ -24,7 +21,7 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-discussions.component.html',
   styleUrls: ['./canvas-columns-discussions.component.scss'],
 })
-export class CanvasColumnsDiscussionsComponent implements OnInit, OntaskMerge {
+export class CanvasColumnsDiscussionsComponent implements OnInit, DataFetcher {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);

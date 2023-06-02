@@ -1,4 +1,4 @@
-import { OntaskMerger } from '@app/shared';
+import { DataMerger } from '@app/shared';
 import { CanvasColumnsActivityComponent } from './canvas-columns/canvas-columns-activity/canvas-columns-activity.component';
 import { CanvasColumnsAssignmentsComponent } from './canvas-columns/canvas-columns-assignments/canvas-columns-assignments.component';
 import { CanvasColumnsDiscussionsComponent } from './canvas-columns/canvas-columns-discussions/canvas-columns-discussions.component';
@@ -36,4 +36,4 @@ export default [
     component: CanvasColumnsActivityComponent,
     title: 'Activity',
   },
-] as OntaskMerger[];
+] as DataMerger[];

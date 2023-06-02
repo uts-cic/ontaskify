@@ -1,10 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { OntaskMergeMapPipe } from '@app/shared';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -13,9 +13,9 @@ export const appConfig: ApplicationConfig = {
       BrowserModule,
       BrowserAnimationsModule,
       HttpClientModule,
-      MatDialogModule
+      MatDialogModule,
+      MatBottomSheetModule
     ),
     provideRouter(routes, withComponentInputBinding()),
-    OntaskMergeMapPipe,
   ],
 };

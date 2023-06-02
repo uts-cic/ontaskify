@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, computed, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '@app/shared';
 import { CanvasConnectComponent } from '../canvas-connect/canvas-connect.component';
+import { MaterialModule } from '../material.module';
 import { TokenService } from '../services/token.service';
 
 @Component({

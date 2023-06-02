@@ -8,11 +8,11 @@ import {
   signal,
 } from '@angular/core';
 import {
-  MaterialModule,
-  OntaskMerge,
-  OntaskMergeMapPipe,
+  DataFetcher,
+  DataMergerService,
   SelectColumnsComponent,
 } from '@app/shared';
+import { MaterialModule } from '../../material.module';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({
@@ -22,14 +22,14 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-assignments.component.html',
   styleUrls: ['./canvas-columns-assignments.component.scss'],
 })
-export class CanvasColumnsAssignmentsComponent implements OnInit, OntaskMerge {
+export class CanvasColumnsAssignmentsComponent implements OnInit, DataFetcher {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
   rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
-  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private dataMergerService = inject(DataMergerService);
 
   assignments: WritableSignal<CanvasAssignment[] | null> = signal(null);
   assignment: WritableSignal<CanvasAssignment | null> = signal(null);
@@ -45,7 +45,7 @@ export class CanvasColumnsAssignmentsComponent implements OnInit, OntaskMerge {
               assignment.id
             );
           this.rows.set(
-            this.ontaskMergeMapPipe.transform(submissions, 'user_id')
+            this.dataMergerService.transform(submissions, 'user_id', 'id')
           );
           this.loading.set(false);
         }

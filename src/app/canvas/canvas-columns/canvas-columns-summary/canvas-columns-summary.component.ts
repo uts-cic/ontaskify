@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 
 import {
-  OntaskMerge,
-  OntaskMergeMapPipe,
+  DataFetcher,
+  DataMergerService,
   SelectColumnsComponent,
 } from '@app/shared';
 import { CanvasCourseService } from '../../services/canvas-course.service';
@@ -21,18 +21,18 @@ import { CanvasCourseService } from '../../services/canvas-course.service';
   templateUrl: './canvas-columns-summary.component.html',
   styleUrls: ['./canvas-columns-summary.component.scss'],
 })
-export class CanvasColumnsSummaryComponent implements OnInit, OntaskMerge {
+export class CanvasColumnsSummaryComponent implements OnInit, DataFetcher {
   loading: WritableSignal<boolean> = signal(true);
   id: WritableSignal<string> = signal('id');
   cols: WritableSignal<string[]> = signal([]);
   rows: WritableSignal<OntaskMergeMap | null> = signal(null);
 
   private canvasCourseService = inject(CanvasCourseService);
-  private ontaskMergeMapPipe = inject(OntaskMergeMapPipe);
+  private dataMergerService = inject(DataMergerService);
 
   async ngOnInit() {
     const summaries = await this.canvasCourseService.getStudentSummaries();
-    this.rows.set(this.ontaskMergeMapPipe.transform(summaries, 'id'));
+    this.rows.set(this.dataMergerService.transform(summaries, 'id', 'id'));
     this.loading.set(false);
   }
 }

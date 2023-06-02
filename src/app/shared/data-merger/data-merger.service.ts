@@ -17,6 +17,7 @@ export interface DataFetcher {
 
 export interface DataMerger {
   title: string;
+  description: string;
   component: Type<DataFetcher>;
 }
 
@@ -46,7 +47,7 @@ export class DataMergerService {
     return entities.reduce((map, entity) => {
       const key = at(entity as {}, [path])[0] as OntaskRowValue;
       if (keys.has(key)) {
-        map.set(key, omit(flatten(entity), path));
+        map.set(key, omit(flatten(entity), path, prop));
       }
       return map;
     }, new Map());

@@ -45,7 +45,9 @@ export class CanvasColumnsAssignmentsComponent implements OnInit, DataFetcher {
               assignment.id
             );
           this.rows.set(
-            this.dataMergerService.transform(submissions, 'user_id', 'id')
+            submissions.length
+              ? this.dataMergerService.transform(submissions, 'user_id', 'id')
+              : null
           );
           this.loading.set(false);
         }

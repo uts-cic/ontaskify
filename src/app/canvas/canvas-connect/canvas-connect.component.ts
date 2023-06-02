@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MaterialModule } from '../../shared/material.module';
+import { MaterialModule } from '@app/shared';
 import { TokenService } from '../services/token.service';
 
 @Component({

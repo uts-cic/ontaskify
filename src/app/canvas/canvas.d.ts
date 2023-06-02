@@ -1,4 +1,4 @@
-interface UserProfile {
+interface CanvasUserProfile {
   id: number;
   name: string;
   sortable_name: string;
@@ -15,44 +15,7 @@ interface UserProfile {
   effective_locale: string;
 }
 
-interface GradingPeriod {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-}
-
-interface Enrollment {
-  type: string;
-  role: string;
-  computed_final_score: number;
-  computed_current_score: number;
-  computed_final_grade: string;
-  computed_current_grade: string;
-  current_grading_period_title: string;
-}
-
-interface CalendarLink {
-  ics: string;
-}
-
-interface Term {
-  id: number;
-  name: string;
-  start_at: string;
-  end_at: string;
-}
-
-interface CourseProgress {
-  requirement_count: number;
-  requirement_completed_count: number;
-  next_requirement_url: string;
-  completed_at: string;
-  user_id: number;
-  workflow_state: string;
-}
-
-interface Course {
+interface CanvasCourse {
   id?: number;
   sis_course_id?: string;
   uuid?: string;
@@ -65,21 +28,48 @@ interface Course {
   account_id?: number;
   root_account_id?: number;
   enrollment_term_id?: number;
-  grading_periods?: GradingPeriod[];
+  grading_periods?: {
+    id: number;
+    title: string;
+    start_date: string;
+    end_date: string;
+  }[];
   grading_standard_id?: number;
   grade_passback_setting?: string;
   created_at?: string;
   start_at?: string;
   end_at?: string;
   locale?: string;
-  enrollments?: Enrollment[];
+  enrollments?: {
+    type: string;
+    role: string;
+    computed_final_score: number;
+    computed_current_score: number;
+    computed_final_grade: string;
+    computed_current_grade: string;
+    current_grading_period_title: string;
+  }[];
   total_students?: number;
-  calendar?: CalendarLink;
+  calendar?: {
+    ics: string;
+  };
   default_view?: 'feed' | 'wiki' | 'modules' | 'syllabus' | 'assignments';
   syllabus_body?: string;
   needs_grading_count?: number;
-  term?: Term;
-  course_progress?: CourseProgress;
+  term?: {
+    id: number;
+    name: string;
+    start_at: string;
+    end_at: string;
+  };
+  course_progress?: {
+    requirement_count: number;
+    requirement_completed_count: number;
+    next_requirement_url: string;
+    completed_at: string;
+    user_id: number;
+    workflow_state: string;
+  };
   apply_assignment_group_weights?: boolean;
   permissions?: any;
   is_public?: boolean;
@@ -106,7 +96,7 @@ interface Course {
   template?: boolean;
 }
 
-interface StudentSummary {
+interface CanvasStudentSummary {
   id: number;
   user_id: number;
   current_score: number;
@@ -165,7 +155,7 @@ interface CanvasAssignment {
   quiz_id: number | null;
 }
 
-interface CanvasSubmission {
+interface CanvasAssignmentSubmission {
   assignment_id?: number;
   attempt?: number;
   body?: string;
@@ -200,7 +190,7 @@ interface CanvasSubmission {
   redo_request?: boolean;
 }
 
-interface UserProgress {
+interface CanvasUserProgress {
   id: number;
   anonymous_id: string;
   display_name: string;
@@ -393,16 +383,7 @@ type CanvasDiscussionTopic = {
   sort_by_rating?: boolean;
 };
 
-type DiscussionParticipant = {
-  id: number;
-  anonymous_id: string | null;
-  display_name: string;
-  avatar_image_url: string;
-  html_url: string;
-  pronouns: string | null;
-};
-
-type DiscussionEntry = {
+type CanvasDiscussionEntry = {
   id: number;
   editor_id: number;
   user_id: number;
@@ -412,14 +393,21 @@ type DiscussionEntry = {
   rating_count: number | null;
   rating_sum: number | null;
   message: string;
-  replies: DiscussionEntry[];
+  replies: CanvasDiscussionEntry[];
 };
 
-type DiscussionTopicView = {
+type CanvasDiscussionTopicView = {
   unread_entries: number[];
   forced_entries: any[];
   entry_ratings: Record<string, any>;
-  participants: DiscussionParticipant[];
-  view: DiscussionEntry[];
+  participants: {
+    id: number;
+    anonymous_id: string | null;
+    display_name: string;
+    avatar_image_url: string;
+    html_url: string;
+    pronouns: string | null;
+  }[];
+  view: CanvasDiscussionEntry[];
   new_entries: any[];
 };

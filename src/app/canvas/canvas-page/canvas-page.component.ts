@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, computed, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from 'src/app/shared/material.module';
+import { MaterialModule } from '@app/shared';
 import { CanvasConnectComponent } from '../canvas-connect/canvas-connect.component';
 import { TokenService } from '../services/token.service';
 
@@ -13,7 +13,7 @@ import { TokenService } from '../services/token.service';
   styleUrls: ['./canvas-page.component.scss'],
 })
 export class CanvasPageComponent {
-  @Input({ required: true }) profile!: UserProfile;
+  @Input({ required: true }) profile!: CanvasUserProfile;
   private token = inject(TokenService).token;
   maskedToken = computed(() => this.token()?.substring(0, 6).padEnd(9, '*'));
 

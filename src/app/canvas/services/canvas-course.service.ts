@@ -7,25 +7,25 @@ import { CanvasService } from './canvas.service';
 })
 export class CanvasCourseService {
   private canvasService = inject(CanvasService);
-  course = signal<Course | null>(null);
+  course = signal<CanvasCourse | null>(null);
   path = computed(() => `courses/${this.course()?.id || 0}`);
 
-  async getStudents(): Promise<UserProfile[]> {
+  async getStudents(): Promise<CanvasUserProfile[]> {
     const params = new HttpParams().set('enrollment_type', 'student');
-    return this.canvasService.queryMany<UserProfile>(
+    return this.canvasService.queryMany<CanvasUserProfile>(
       `${this.path()}/users`,
       params
     );
   }
 
-  async getStudentSummaries(): Promise<StudentSummary[]> {
-    return this.canvasService.queryMany<StudentSummary>(
+  async getStudentSummaries(): Promise<CanvasStudentSummary[]> {
+    return this.canvasService.queryMany<CanvasStudentSummary>(
       `${this.path()}/analytics/student_summaries`
     );
   }
 
-  async getBulkUserProgress(): Promise<UserProgress[]> {
-    return this.canvasService.queryMany<UserProgress>(
+  async getBulkUserProgress(): Promise<CanvasUserProgress[]> {
+    return this.canvasService.queryMany<CanvasUserProgress>(
       `${this.path()}/bulk_user_progress`
     );
   }
@@ -46,8 +46,8 @@ export class CanvasCourseService {
 
   async getAssignmentSubmissions(
     assignmentId: number
-  ): Promise<CanvasSubmission[]> {
-    return this.canvasService.queryMany<CanvasSubmission>(
+  ): Promise<CanvasAssignmentSubmission[]> {
+    return this.canvasService.queryMany<CanvasAssignmentSubmission>(
       `${this.path()}/assignments/${assignmentId}/submissions`
     );
   }
@@ -62,11 +62,6 @@ export class CanvasCourseService {
       new HttpParams(),
       'quiz_submissions'
     );
-    // const params = .set('per_page', '50');
-    // const result = await this.canvasService.query<{
-    //   quiz_submissions: CanvasQuiz[];
-    // }>(`${this.path()}/quizzes/${quizId}/submissions`, params);
-    // return result.quiz_submissions;
   }
 
   async getDiscussionTopics(): Promise<CanvasDiscussionTopic[]> {
@@ -75,11 +70,12 @@ export class CanvasCourseService {
     );
   }
 
-  async getDiscussionEntries(topicId: number): Promise<DiscussionEntry[]> {
-    const { view } = await this.canvasService.query<DiscussionTopicView>(
+  async getDiscussionEntries(
+    topicId: number
+  ): Promise<CanvasDiscussionEntry[]> {
+    const { view } = await this.canvasService.query<CanvasDiscussionTopicView>(
       `${this.path()}/discussion_topics/${topicId}/view`
     );
-
     return view;
   }
 

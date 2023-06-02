@@ -8,13 +8,13 @@ import { CanvasTestComponent } from './canvas-test/canvas-test.component';
 import { CanvasService } from './services/canvas.service';
 import { TokenService } from './services/token.service';
 
-export const profileResolver: ResolveFn<UserProfile> = () =>
+export const profileResolver: ResolveFn<CanvasUserProfile> = () =>
   inject(CanvasService).getProfile();
 
-export const coursesResolver: ResolveFn<Course[]> = () =>
+export const coursesResolver: ResolveFn<CanvasCourse[]> = () =>
   inject(CanvasService).getCourses();
 
-export const courseResolver: ResolveFn<Course> = (
+export const courseResolver: ResolveFn<CanvasCourse> = (
   route: ActivatedRouteSnapshot
 ) => inject(CanvasService).getCourse(Number(route.paramMap.get('course_id')));
 

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
-import { MaterialModule } from 'src/app/shared/material.module';
+import { MaterialModule } from '@app/shared';
 import { CanvasService } from '../services/canvas.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { CanvasService } from '../services/canvas.service';
   styleUrls: ['./canvas-test.component.scss'],
 })
 export class CanvasTestComponent {
-  @Input({ required: true }) courses!: Course[];
+  @Input({ required: true }) courses!: CanvasCourse[];
 
   canvas = inject(CanvasService);
   course?: number;

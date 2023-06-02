@@ -5,9 +5,9 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { ProgressService } from '@app/shared';
 import { at, now } from 'lodash';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
-import { ProgressService } from 'src/app/shared/progress/progress.service';
 import { TokenService } from './token.service';
 
 const extractNextPage = (linkHeader: string | null): string | null => {
@@ -93,16 +93,16 @@ export class CanvasService {
     return items;
   }
 
-  async getProfile(): Promise<UserProfile> {
-    return this.query<UserProfile>('users/self/profile');
+  async getProfile(): Promise<CanvasUserProfile> {
+    return this.query<CanvasUserProfile>('users/self/profile');
   }
 
-  async getCourses(): Promise<Course[]> {
+  async getCourses(): Promise<CanvasCourse[]> {
     const params = new HttpParams().set('enrollment_type', 'teacher');
-    return this.queryMany<Course>('courses', params);
+    return this.queryMany<CanvasCourse>('courses', params);
   }
 
-  async getCourse(id: number): Promise<Course> {
-    return this.query<Course>('courses/' + id);
+  async getCourse(id: number): Promise<CanvasCourse> {
+    return this.query<CanvasCourse>('courses/' + id);
   }
 }

@@ -7,12 +7,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import {
+  MaterialModule,
+  OntaskMerge,
+  OntaskMergeMapPipe,
+  SelectColumnsComponent,
+} from '@app/shared';
 import { chain, filter, isEmpty, sortBy } from 'lodash';
 import { ParseResult, parse } from 'papaparse';
-import { MaterialModule } from 'src/app/shared/material.module';
-import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
-import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
-import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
 
 type Activity = {
   id: number;

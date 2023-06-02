@@ -7,10 +7,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { MaterialModule } from 'src/app/shared/material.module';
-import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
-import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
-import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
+import {
+  MaterialModule,
+  OntaskMerge,
+  OntaskMergeMapPipe,
+  SelectColumnsComponent,
+} from '@app/shared';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({

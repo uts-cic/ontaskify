@@ -9,14 +9,15 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { difference } from 'lodash';
-import { OntaskCsvComponent } from 'src/app/shared/ontask-csv/ontask-csv.component';
 import {
+  MaterialModule,
+  OntaskCsvComponent,
   OntaskMergeComponent,
   OntaskMerger,
-} from 'src/app/shared/ontask-merge/ontask-merge.component';
-import { MaterialModule } from '../../shared/material.module';
-import { OntaskService } from '../../shared/ontask.service';
+  OntaskService,
+} from '@app/shared';
+import { difference } from 'lodash';
+
 import MERGERS from '../mergers';
 import { CanvasCourseService } from '../services/canvas-course.service';
 
@@ -28,7 +29,7 @@ import { CanvasCourseService } from '../services/canvas-course.service';
   styleUrls: ['./canvas-course.component.scss'],
 })
 export class CanvasCourseComponent implements OnInit, OnDestroy {
-  @Input({ required: true }) course!: Course;
+  @Input({ required: true }) course!: CanvasCourse;
 
   private dialog = inject(MatDialog);
   private canvasCourseService = inject(CanvasCourseService);
@@ -55,7 +56,7 @@ export class CanvasCourseComponent implements OnInit, OnDestroy {
     const students = await this.canvasCourseService.getStudents();
 
     this.rows.set(
-      students.map((student: UserProfile): OntaskRow => {
+      students.map((student: CanvasUserProfile): OntaskRow => {
         const id = student.id;
         const student_id = student['sis_user_id'];
         const splitName = student['sortable_name'].split(', ');

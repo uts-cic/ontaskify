@@ -8,10 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  MaterialModule,
+  OntaskMerge,
+  SelectColumnsComponent,
+} from '@app/shared';
 import { difference, max, min } from 'lodash';
-import { MaterialModule } from 'src/app/shared/material.module';
-import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
-import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
+
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({
@@ -31,7 +34,7 @@ export class CanvasColumnsDiscussionsComponent implements OnInit, OntaskMerge {
 
   discussions: WritableSignal<CanvasDiscussionTopic[] | null> = signal(null);
   selected: WritableSignal<CanvasDiscussionTopic[]> = signal([]);
-  entries = new Map<number, DiscussionEntry[]>();
+  entries = new Map<number, CanvasDiscussionEntry[]>();
 
   constructor() {
     effect(
@@ -48,7 +51,7 @@ export class CanvasColumnsDiscussionsComponent implements OnInit, OntaskMerge {
 
         const getRowsFromEntries = (
           rows: OntaskMergeMap,
-          entry: DiscussionEntry
+          entry: CanvasDiscussionEntry
         ) => {
           const row = (rows.get(entry.user_id) || {
             posts: 0,

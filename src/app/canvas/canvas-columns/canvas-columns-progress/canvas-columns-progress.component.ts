@@ -6,10 +6,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { OntaskMergeMapPipe } from 'src/app/shared/ontask-merge/ontask-merge-map.pipe';
-import { OntaskMerge } from 'src/app/shared/ontask-merge/ontask-merge.component';
-import { ProgressService } from 'src/app/shared/progress/progress.service';
-import { SelectColumnsComponent } from 'src/app/shared/select-columns/select-columns.component';
+import {
+  OntaskMerge,
+  OntaskMergeMapPipe,
+  ProgressService,
+  SelectColumnsComponent,
+} from '@app/shared';
 import { CanvasCourseService } from '../../services/canvas-course.service';
 
 @Component({

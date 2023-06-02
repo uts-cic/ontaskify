@@ -4,8 +4,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { OntaskMergeMapPipe } from '@app/shared';
 import { routes } from './app.routes';
-import { OntaskMergeMapPipe } from './shared/ontask-merge/ontask-merge-map.pipe';
 
 export const appConfig: ApplicationConfig = {
   providers: [

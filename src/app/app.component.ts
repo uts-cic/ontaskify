@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { ProgressComponent } from './shared/progress/progress.component';
+import { ProgressComponent } from '@app/shared';
 
 @Component({
   selector: 'app-root',

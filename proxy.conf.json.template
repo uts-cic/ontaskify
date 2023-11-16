@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://<my-canvas-domain>",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

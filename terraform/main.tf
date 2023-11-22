@@ -14,10 +14,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "ontaskify_bucket" {
-  bucket = "ontaskify"
+  bucket = var.ontaskify_bucket
 
   tags = {
-    Name = "Ontaskify"
+    Name = var.ontaskify_name
   }
 }
 
@@ -56,16 +56,16 @@ resource "aws_s3_bucket_policy" "ontaskify_policy" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "ontaskify_oai" {
-  comment = "Ontaskify OAI"
+  comment = "${var.ontaskify_name} OAI"
 }
 
 resource "aws_cloudfront_distribution" "ontaskify_cloudfront" {
   enabled = true
-  aliases = ["ontaskify.utscic.edu.au"]
+  aliases = [var.ontaskify_domain]
 
   origin {
     domain_name = aws_s3_bucket.ontaskify_bucket.bucket_regional_domain_name
-    origin_id   = "S3-ontaskify"
+    origin_id   = "S3-${var.ontaskify_bucket}"
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.ontaskify_oai.cloudfront_access_identity_path
@@ -73,7 +73,7 @@ resource "aws_cloudfront_distribution" "ontaskify_cloudfront" {
   }
 
   origin {
-    domain_name = "canvas.uts.edu.au"
+    domain_name = var.canvas_domain
     origin_id   = "Canvas"
     custom_origin_config {
       http_port              = 80
@@ -84,7 +84,7 @@ resource "aws_cloudfront_distribution" "ontaskify_cloudfront" {
   }
 
   default_cache_behavior {
-    target_origin_id = "S3-ontaskify"
+    target_origin_id = "S3-${var.ontaskify_bucket}"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
 
@@ -133,11 +133,11 @@ resource "aws_cloudfront_distribution" "ontaskify_cloudfront" {
   }
 
   tags = {
-    Name = "Ontaskify"
+    Name = var.ontaskify_name
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "arn:aws:acm:us-east-1:079464859481:certificate/9143dcea-dd3e-490f-ad72-063896607699"
+    acm_certificate_arn      = var.ontaskify_certificate_arn
     minimum_protocol_version = "TLSv1.2_2021"
     ssl_support_method       = "sni-only"
   }

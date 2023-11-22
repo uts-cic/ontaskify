@@ -1,0 +1,4 @@
+bucket  = "your_bucket_name"
+key     = "path/to/your/statefile.tfstate"
+region  = "your_aws_region"
+encrypt = true

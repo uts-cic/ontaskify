@@ -20,6 +20,62 @@ OnTaskify is a dynamic tool designed to enhance the feedback process for educati
 3. Terraform scripts are provided for deploying the Angular app to AWS S3, with a CloudFront distribution.
    - Ensure the Canvas origin is added to address CORS issues by proxying requests to the Canvas instance from the same domain.
 
+## Terraform Setup (for AWS deployment)
+
+Follow these steps to configure and use Terraform for managing our infrastructure:
+
+### Navigate to Terraform Directory
+
+```bash
+cd terraform
+```
+
+### Configure Backend
+
+Copy the `terraform.template.tfbackend` file to a new file named `terraform.tfbackend`. Edit this new file to include your specific backend configuration.
+
+### Create Terraform Variable File
+
+Create a `terraform.tfvars` file with your AWS credentials and project-specific variables. Replace the placeholders with your actual details:
+
+```bash
+aws_access_key = "your_aws_access_key"
+aws_secret_key = "your_aws_secret_key"
+aws_region     = "your_aws_region"
+ontaskify_bucket          = "my-ontaskify"
+ontaskify_name            = "Ontaskify"
+ontaskify_domain          = "my-ontaskify.utscic.edu.au"
+ontaskify_certificate_arn = "your_certificate_arn"
+canvas_domain             = "my-canvas.domain"
+```
+
+**Important:** Do not commit `terraform.tfvars` to your version control system.
+
+### Initialize Terraform
+
+Initialize Terraform to set up the necessary providers and backend:
+
+```bash
+terraform init -backend-config=terraform.tfbackend
+```
+
+### Apply Configuration
+
+Apply the Terraform configuration to create or update the infrastructure:
+
+```bash
+terraform apply
+```
+
+### Additional Commands
+
+Use other Terraform commands as needed for different operations:
+
+- `terraform plan` to preview changes.
+- `terraform destroy` to remove resources.
+
+**Note:** Ensure Terraform is installed and configured correctly on your system. Familiarize yourself with the Terraform files and documentation to understand the infrastructure being managed.
+
 ## Development
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.

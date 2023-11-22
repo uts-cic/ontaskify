@@ -39,8 +39,9 @@ export class CanvasService {
             error.message ||
             'Unknown error';
           console.log(message);
-          this.progress.mutate((progress) => {
+          this.progress.update((progress) => {
             if (progress) progress.error = message;
+            return progress;
           });
           return throwError(() => new Error(message));
         })
@@ -81,9 +82,10 @@ export class CanvasService {
 
       if (nextPage) {
         params = params.set('page', nextPage);
-        this.progress.mutate((progress) => {
+        this.progress.update((progress) => {
           progress!.items = items.length;
           progress!.time = now() - start;
+          return progress;
         });
       } else {
         this.progress.set(null);

@@ -16,11 +16,11 @@ export class OntaskService {
   rows = signal<OntaskRow[] | null>(null);
 
   mergeData({ id, cols, rows }: MergeData) {
-    this.columns.mutate((columns) =>
-      columns?.push(...difference(cols, columns))
+    this.columns.update((columns) =>
+      columns ? [...columns, ...difference(cols, columns)] : []
     );
-    this.rows.mutate((rs) =>
-      rs?.forEach((row) => assign(row, rows.get(row[id])))
+    this.rows.update((rs) =>
+      rs?.map((row) => assign(row, rows.get(row[id]))) ?? []
     );
   }
 

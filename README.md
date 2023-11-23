@@ -2,7 +2,7 @@
 
 [![Quality Gate Status](https://sonarqube.utscic.edu.au/api/project_badges/measure?project=uts-cic_ontaskify_AYv01JOdSoFdTa0K0K7B&metric=alert_status&token=sqb_fabbfa4dbf5b1d8cd8bb531a6ed1447876e24fab)](https://sonarqube.utscic.edu.au/dashboard?id=uts-cic_ontaskify_AYv01JOdSoFdTa0K0K7B)
 
-OnTaskify is a dynamic tool designed to enhance the feedback process for educational environments. Leveraging a connection with the Canvas system, it fetches learner data and organises it into a comprehensive table. This table can then be utilized by OnTask to provide scaled feedback to students. Currently, OnTaskify supports a Canvas connection, functioning as an independent pipeline that requires only a Canvas access token to query the system as directed by the user.
+OnTaskify is a utility to assist the use of OnTask to provide personalised feedback to students at scale, based on their Canvas activity traces. For details of the UTS:CIC OnTask project see [https://cic.uts.edu.au/tools/ontask/](https://cic.uts.edu.au/tools/ontask/)
 
 ## Installation
 
